@@ -30,8 +30,7 @@ useEffect(() => {
   async function carregar() {
     setLoading(true);
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost/api";
-      const res = await fetch(`${base}/buscar-produto.php?id=${id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buscar-produto.php?id=${id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 

@@ -1,5 +1,5 @@
 // src/services/produtos.ts
-const API_URL = "http://10.0.0.120/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.0.0.120/api";
 
 export interface Produto {
   id: number;

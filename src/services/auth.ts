@@ -1,5 +1,5 @@
 export async function registrar(nome: string, email: string, senha: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://10.0.0.120/api";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const response = await fetch(`${apiUrl}/registro.php`, {
     method: "POST",
     headers: {
@@ -12,7 +12,7 @@ export async function registrar(nome: string, email: string, senha: string) {
 }
 
 export async function login(email: string, senha: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://10.0.0.120/api";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const response = await fetch(`${apiUrl}/login.php`, {
     method: "POST",
     headers: {
