@@ -1,5 +1,0 @@
-[INFORMATION]
-Projects=T_Rex_SK;Mapu_SK;
-OSs=Windows 10 All X64;
-WHQL=Y,
-ProviderFullName=Intel
