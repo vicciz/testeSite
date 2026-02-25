@@ -1,26 +1,118 @@
 @import "tailwindcss";
 
+/* 🎨 Paleta premium (perfume store) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b0b0d;        /* preto profundo */
+  --foreground: #f5f5f7;        /* branco չափ Apple-like */
+  --accent-gold: #d4af37;       /* dourado elegante */
+  --accent-soft: #b89b5e;
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --border-soft: rgba(255, 255, 255, 0.08);
 }
 
+/* Integra com Tailwind Theme */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent-gold);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* 🌙 Dark premium */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0b0b0d;
+    --foreground: #f5f5f7;
   }
 }
 
+/* ✨ Glow refinado (menos chamativo, mais luxo) */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0px rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(212, 175, 55, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(212, 175, 55, 0.2);
+  }
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2.8s infinite ease-in-out;
+}
+
+/* 🧴 Estilo global */
 body {
-  background: var(--background);
+  background: radial-gradient(
+    circle at top,
+    #141418 0%,
+    #0b0b0d 60%
+  );
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+/* 🖤 Cards de produto */
+.card-perfume {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  backdrop-filter: blur(14px);
+  border-radius: 1.25rem;
+  transition: all 0.4s ease;
+}
+
+.card-perfume:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* 🟡 Botão premium */
+.btn-gold {
+  background: linear-gradient(
+    135deg,
+    #d4af37,
+    #f2d57c
+  );
+  color: #0b0b0d;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  border-radius: 999px;
+  transition: all 0.4s ease;
+}
+
+.btn-gold:hover {
+  transform: scale(1.06);
+  filter: brightness(1.1);
+  box-shadow: 0 20px 40px rgba(212, 175, 55, 0.45);
+}
+
+/* 🕯️ Texto sofisticado */
+.text-muted {
+  color: rgba(245, 245, 247, 0.6);
+}
+
+/* ✨ Linha dourada decorativa */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(212, 175, 55, 0.7),
+    transparent
+  );
+}
+
+/* Scroll horizontal invisível */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE e Edge */
+  scrollbar-width: none; /* Firefox */
 }

@@ -11,13 +11,13 @@ export default function Cadastro() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const resposta = await registrar(nome, email, senha);
-    console.log(resposta);
+    const response = await registrar(nome, email, senha);
+    console.log(response);
 
-    if (resposta.success) {
+    if (response.success) {
       alert("Cadastro realizado com sucesso!");
     } else {
-      alert(resposta.message || "Erro ao cadastrar");
+      alert(response.message || "Erro ao cadastrar");
     }
   }
 
