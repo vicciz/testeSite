@@ -8,9 +8,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["recharts"],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
