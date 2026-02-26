@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ComprarButton } from '@/src/components/button';
 import Footer from '@/src/components/Footer';
@@ -9,14 +9,15 @@ import { Produto } from '@/src/services/produtos';
 
 
 export default function ProdutoDetalhe() {
-  const params = useParams();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const [produto, setProduto] = useState<Produto | null>(null);
   const [imagemAtiva, setImagemAtiva] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!params.id) return;
+    if (!id) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/produto.php?id=${params.id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/produto.php?id=${id}`)
       .then(res => res.json())
       .then(data => {
         setProduto(data);
@@ -27,7 +28,7 @@ export default function ProdutoDetalhe() {
         }
       })
       .catch(err => console.error(err));
-  }, [params.id]);
+  }, [id]);
 
   if (!produto) {
     return <p className="text-center mt-20 text-white">Carregando produto...</p>;

@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function EditarProduto() {
-  
-  const params = useParams();
-const id = params?.id as string;
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") ?? "";
 
   const [form, setForm] = useState<any>({
     nome: "",
@@ -23,45 +22,43 @@ const id = params?.id as string;
 
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Carregar produto
-useEffect(() => {
-  if (!id) return;
+  useEffect(() => {
+    if (!id) return;
 
-  async function carregar() {
-    setLoading(true);
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buscar-produto.php?id=${id}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+    async function carregar() {
+      setLoading(true);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buscar-produto.php?id=${id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
-      if (data && data.produto) {
-        const p: any = data.produto;
-        const sanitized = {
-          nome: p.nome ?? "",
-          preco: p.preco ?? "",
-          link: p.link ?? "",
-          rating: p.rating ?? "",
-          reviews: p.reviews ?? "",
-          categoria: p.categoria ?? "",
-          descricao: p.descricao ?? "",
-          detalhes: p.detalhes ?? "",
-          fornecedor: p.fornecedor ?? "",
-          image: null,
-        };
+        if (data && data.produto) {
+          const p: any = data.produto;
+          const sanitized = {
+            nome: p.nome ?? "",
+            preco: p.preco ?? "",
+            link: p.link ?? "",
+            rating: p.rating ?? "",
+            reviews: p.reviews ?? "",
+            categoria: p.categoria ?? "",
+            descricao: p.descricao ?? "",
+            detalhes: p.detalhes ?? "",
+            fornecedor: p.fornecedor ?? "",
+            image: null,
+          };
 
-        setForm(sanitized);
+          setForm(sanitized);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar produto:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Erro ao carregar produto:", error);
-    } finally {
-      setLoading(false);
     }
-  }
 
-  carregar();
-}, [id]);
+    carregar();
+  }, [id]);
 
-  // 🔹 Inputs normais
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -71,7 +68,6 @@ useEffect(() => {
     });
   };
 
-  // 🔹 Upload imagem
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
@@ -81,7 +77,6 @@ useEffect(() => {
     });
   };
 
-  // 🔹 Submit correto
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
