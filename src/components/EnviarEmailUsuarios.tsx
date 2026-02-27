@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/supabaseClient';
 
 interface Usuario {
   id: number;
@@ -43,28 +44,44 @@ export default function EnviarEmailUsuarios({ usuarios }: Props) {
     }
 
     try {
-      const formData = new FormData();
-      emails.forEach((email, i) => formData.append(`emails[${i}]`, email));
-      formData.append('assunto', assunto);
-      formData.append('mensagem', mensagem);
-      if (arquivo) formData.append('arquivo', arquivo);
+      let attachmentUrl: string | null = null;
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/enviar-email.php`, {
-        method: 'POST',
-        body: formData,
+      if (arquivo) {
+        const fileName = `${Date.now()}-${arquivo.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('emails')
+          .upload(fileName, arquivo, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) {
+          alert('Erro ao enviar arquivo');
+          return;
+        }
+
+        attachmentUrl = supabase.storage
+          .from('emails')
+          .getPublicUrl(uploadData.path).data.publicUrl;
+      }
+
+      const { error } = await supabase.from('email_queue').insert({
+        emails,
+        assunto,
+        mensagem,
+        attachment_url: attachmentUrl,
       });
 
-      const data = await res.json();
-
-      if (data.success) {
-        alert('Emails enviados com sucesso!');
-        setSelecionados([]);
-        setAssunto('');
-        setMensagem('');
-        setArquivo(null);
-      } else {
-        alert('Erro ao enviar emails: ' + (data.error || 'Desconhecido'));
+      if (error) {
+        alert('Erro ao enfileirar emails');
+        return;
       }
+
+      alert('Emails enfileirados com sucesso!');
+      setSelecionados([]);
+      setAssunto('');
+      setMensagem('');
+      setArquivo(null);
     } catch (err) {
       alert('Erro ao conectar com o servidor');
     }

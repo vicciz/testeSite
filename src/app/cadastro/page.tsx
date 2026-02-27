@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { registrar } from "@/src/services/auth";
+import { supabase } from "@/supabaseClient";
 
 export default function Cadastro() {
   const [nome, setNome] = useState("");
@@ -11,7 +11,13 @@ export default function Cadastro() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const { data, error } = await registrar(nome, email, senha);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: senha,
+      options: {
+        data: { nome },
+      },
+    });
 
     if (error) {
       console.error(error);
@@ -19,8 +25,10 @@ export default function Cadastro() {
       return;
     }
 
-    alert("Cadastro realizado com sucesso! Verifique seu email.");
-    window.location.href = "/login";
+    if (data?.user) {
+      alert("Cadastro realizado com sucesso! Verifique seu email.");
+      window.location.href = "/login";
+    }
   }
 
   return (

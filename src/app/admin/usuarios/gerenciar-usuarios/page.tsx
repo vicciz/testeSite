@@ -4,26 +4,71 @@ import { useEffect, useState } from 'react';
 import { Usuario } from '@/src/services/Usuario';
 import SelectUsuarios from '@/src/components/selectUsuarios';
 import EnviarEmailUsuarios from '@/src/components/EnviarEmailUsuarios';
+import { listarUsuarios, criarUsuario, atualizarUsuario, excluirUsuario } from '@/src/services/usuarios';
 
 export default function CatalogoAdmin() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [termo, setTermo] = useState('');
   const [selecionados, setSelecionados] = useState<number[]>([]);
+  const [form, setForm] = useState({ nome: '', email: '', role: 'user' });
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     async function buscar() {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clientes.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ letra: termo }),
-      });
-
-      const data = await res.json();
-      setUsuarios(data.clientes);
+      const { data, error } = await listarUsuarios(termo);
+      if (error) {
+        console.error(error);
+        setUsuarios([]);
+        return;
+      }
+      setUsuarios(data || []);
     }
 
     buscar();
   }, [termo]);
+
+  async function salvarUsuario() {
+    if (!form.nome || !form.email) {
+      alert('Preencha nome e email');
+      return;
+    }
+
+    if (editingId) {
+      const { error } = await atualizarUsuario(editingId, form);
+      if (error) {
+        alert('Erro ao atualizar usuário');
+        return;
+      }
+    } else {
+      const { error } = await criarUsuario(form);
+      if (error) {
+        alert('Erro ao cadastrar usuário');
+        return;
+      }
+    }
+
+    setForm({ nome: '', email: '', role: 'user' });
+    setEditingId(null);
+    const { data } = await listarUsuarios(termo);
+    setUsuarios(data || []);
+  }
+
+  function editarUsuario(usuario: Usuario) {
+    setEditingId(usuario.id);
+    setForm({ nome: usuario.nome, email: usuario.email, role: usuario.role });
+  }
+
+  async function removerUsuario(id: number) {
+    if (!confirm('Deseja realmente excluir este usuário?')) return;
+    const { error } = await excluirUsuario(id);
+    if (error) {
+      alert('Erro ao excluir usuário');
+      return;
+    }
+    setSelecionados(prev => prev.filter(i => i !== id));
+    const { data } = await listarUsuarios(termo);
+    setUsuarios(data || []);
+  }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white px-6 py-10">
@@ -74,6 +119,51 @@ export default function CatalogoAdmin() {
                 {selecionados.length}
               </span>
             </div>
+
+            <div className="pt-4 border-t border-white/10 space-y-3">
+              <p className="text-sm text-zinc-400">
+                {editingId ? 'Editar usuário' : 'Cadastrar usuário'}
+              </p>
+              <input
+                value={form.nome}
+                onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                placeholder="Nome"
+                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+              />
+              <input
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="Email"
+                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+              />
+              <select
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+              >
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
+              <div className="flex gap-2">
+                <button
+                  onClick={salvarUsuario}
+                  className="bg-pink-600 text-white px-4 py-2 rounded text-sm"
+                >
+                  {editingId ? 'Salvar' : 'Cadastrar'}
+                </button>
+                {editingId && (
+                  <button
+                    onClick={() => {
+                      setEditingId(null);
+                      setForm({ nome: '', email: '', role: 'user' });
+                    }}
+                    className="bg-zinc-800 text-white px-4 py-2 rounded text-sm"
+                  >
+                    Cancelar
+                  </button>
+                )}
+              </div>
+            </div>
           </aside>
 
           {/* Coluna direita */}
@@ -82,6 +172,8 @@ export default function CatalogoAdmin() {
               usuarios={usuarios}
               selecionados={selecionados}
               onChange={setSelecionados}
+              onEdit={editarUsuario}
+              onDelete={removerUsuario}
             />
           </div>
 

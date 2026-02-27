@@ -6,12 +6,16 @@ interface SelectUsuariosProps {
   usuarios: Usuario[];
   selecionados: number[];
   onChange: (ids: number[]) => void;
+  onEdit?: (usuario: Usuario) => void;
+  onDelete?: (id: number) => void;
 }
 
 export default function SelectUsuarios({
   usuarios,
   selecionados,
   onChange,
+  onEdit,
+  onDelete,
 }: SelectUsuariosProps) {
   function toggleUsuario(id: number) {
     if (selecionados.includes(id)) {
@@ -46,7 +50,7 @@ export default function SelectUsuarios({
 
       <ul style={{ marginTop: 10 }}>
         {usuarios.map(u => (
-          <li key={u.id}>
+          <li key={u.id} className="flex items-center justify-between gap-2">
             <label>
               <input
                 type="checkbox"
@@ -55,6 +59,26 @@ export default function SelectUsuarios({
               />{' '}
               {u.nome} - {u.email}
             </label>
+            <div className="flex gap-2">
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={() => onEdit(u)}
+                  className="text-indigo-400 text-sm"
+                >
+                  Editar
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(u.id)}
+                  className="text-red-400 text-sm"
+                >
+                  Excluir
+                </button>
+              )}
+            </div>
           </li>
         ))}
       </ul>

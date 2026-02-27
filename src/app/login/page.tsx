@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "@/src/services/auth";
+import { supabase } from "@/supabaseClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,7 +22,10 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const { data, error } = await login(email, senha);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
 
     if (error) {
       alert(error.message ?? "Email ou senha inválidos");
@@ -30,11 +33,10 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     }
 
     if (data?.user) {
-      // Store user in localStorage (or better: use context/session)
-      localStorage.setItem("user", JSON.stringify({ 
-        id: data.user.id, 
+      localStorage.setItem("user", JSON.stringify({
+        id: data.user.id,
         email: data.user.email,
-        role: 'user' // adjust based on your metadata
+        role: "user",
       }));
       alert("Login realizado!");
       window.location.href = "/";

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { supabase } from "@/supabaseClient";
 
 export default function NewsletterPopup() {
   const [open, setOpen] = useState(false);
@@ -18,21 +19,20 @@ export default function NewsletterPopup() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/newsletter.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const { error } = await supabase
+        .from("newsletter")
+        .insert({ email });
 
-      const data = await res.json();
-      alert(data.msg);
-
-      if (data.status === "ok") {
-        if (naoMostrar) {
-          localStorage.setItem("ocultarNewsletter", "true");
-        }
-        setOpen(false);
+      if (error) {
+        alert("Erro ao cadastrar email");
+        return;
       }
+
+      alert("Email cadastrado com sucesso!");
+      if (naoMostrar) {
+        localStorage.setItem("ocultarNewsletter", "true");
+      }
+      setOpen(false);
     } catch {
       alert("Erro ao conectar ao servidor");
     }
