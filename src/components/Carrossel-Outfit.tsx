@@ -56,7 +56,7 @@ export default function CarrosselProdutos() {
             return (
               <Link
                 key={p.id}
-                href={`/produto/${p.id}`}
+                href={`/produto?id=${p.id}`}
                 className="bg-gradient-to-b from-zinc-900 to-black
                            rounded-2xl shadow-lg p-4 text-white
                            hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
@@ -89,7 +89,7 @@ export default function CarrosselProdutos() {
             return (
               <Link
                 key={p.id}
-                href={`/produto/${p.id}`}
+                href={`/produto?id=${p.id}`}
                 className="min-w-[260px] bg-gradient-to-b from-zinc-900 to-black
                            rounded-2xl shadow-lg p-4 text-white"
               >
