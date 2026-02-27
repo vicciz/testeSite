@@ -25,12 +25,19 @@ interface Produto {
 
 export default function Page() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [dbStatus, setDbStatus] = useState<'ok' | 'error' | 'loading'>('loading');
+  const [dbMessage, setDbMessage] = useState<string>('');
 
   useEffect(() => {
     async function carregar() {
       const res = await listarProdutos();
       if (res.status === 'ok') {
         setProdutos(res.produtos);
+        setDbStatus('ok');
+        setDbMessage(`Supabase OK • ${res.produtos.length} produtos`);
+      } else {
+        setDbStatus('error');
+        setDbMessage('Supabase erro ao listar produtos');
       }
     }
     carregar();
@@ -56,6 +63,21 @@ export default function Page() {
         .animation-delay-3000 { animation-delay: 3s; }
         .animation-delay-4000 { animation-delay: 4s; }
       `}</style>
+
+      {/* STATUS */}
+      <div className="fixed top-4 right-4 z-50">
+        <span
+          className={`text-xs px-3 py-1 rounded-full border ${
+            dbStatus === 'ok'
+              ? 'border-green-500 text-green-300 bg-green-500/10'
+              : dbStatus === 'error'
+              ? 'border-red-500 text-red-300 bg-red-500/10'
+              : 'border-yellow-500 text-yellow-300 bg-yellow-500/10'
+          }`}
+        >
+          {dbStatus === 'loading' ? 'Verificando Supabase...' : dbMessage}
+        </span>
+      </div>
 
       {/* HERO */}
       <section className="relative z-10 w-full h-[75vh] flex items-center justify-center text-center overflow-hidden">
