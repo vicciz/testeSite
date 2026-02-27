@@ -4,19 +4,16 @@ import { supabase } from '../../supabaseClient';
 export interface Produto {
   id: number;
   nome: string;
-  preco: string;
-  originalPreco?: string;
-  categoria: string;
-  image: string | null;
-  image1?: string | null;
-  image2?: string | null;
-  image3?: string | null;
-  rating?: string;
-  reviews?: number;
-  descricao?: string;
-  detalhes?: string;
-  link?: string;
+  preco: string | number;
+  link?: string | null;
+  rating?: number | null;
+  reviews?: number | null;
+  image?: string | null;
+  descricao?: string | null;
+  detalhes?: string | null;
   fornecedor?: string | null;
+  categoria_id?: number | null;
+  categorias?: { nome: string } | null;
 }
 
 /**
@@ -26,14 +23,12 @@ export async function listarProdutos(
   categoria?: string,
   tipo?: string
 ): Promise<{ data: Produto[] | null; error: any }> {
-  let query = supabase.from('produtos').select('*');
+  let query = supabase.from('produtos').select('*, categorias(nome)');
 
   if (categoria && categoria !== 'Todos') {
-    query = query.eq('categoria', categoria);
+    query = query.eq('categorias.nome', categoria);
   }
-  if (tipo && tipo !== 'Todos') {
-    query = query.eq('tipo_cosmetico', tipo);
-  }
+  // tipo_cosmetico not present in current table schema
 
   const { data, error } = await query;
   return { data, error };

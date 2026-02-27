@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { buscarProduto, editarProduto } from '@/src/services/produtos';
+import { listarCategorias, Categoria } from '@/src/services/categorias';
 import { supabase } from '@/supabaseClient';
 
 export default function EditarProduto() {
@@ -15,12 +16,13 @@ export default function EditarProduto() {
     link: "",
     rating: "",
     reviews: "",
-    categoria: "",
+    categoria_id: "",
     descricao: "",
     detalhes: "",
     fornecedor: "",
     image: null,
   });
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -30,6 +32,9 @@ export default function EditarProduto() {
     async function carregar() {
       setLoading(true);
       try {
+        const { data: cats } = await listarCategorias();
+        if (cats) setCategorias(cats);
+
         const { data: produto, error } = await buscarProduto(Number(id));
         if (error) throw error;
 
@@ -40,7 +45,7 @@ export default function EditarProduto() {
             link: produto.link ?? "",
             rating: produto.rating ?? "",
             reviews: produto.reviews ?? "",
-            categoria: produto.categoria ?? "",
+            categoria_id: produto.categoria_id ?? "",
             descricao: produto.descricao ?? "",
             detalhes: produto.detalhes ?? "",
             fornecedor: produto.fornecedor ?? "",
@@ -60,7 +65,7 @@ export default function EditarProduto() {
   }, [id]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setForm({
       ...form,
@@ -113,6 +118,7 @@ export default function EditarProduto() {
         descricao: form.descricao,
         detalhes: form.detalhes,
         fornecedor: form.fornecedor,
+        ...(form.categoria_id ? { categoria_id: Number(form.categoria_id) } : {}),
       };
 
       if (imagePath) {
@@ -191,6 +197,20 @@ export default function EditarProduto() {
         onChange={handleChange}
         className="p-2 rounded bg-gray-800"
       />
+
+      <select
+        name="categoria_id"
+        value={form.categoria_id}
+        onChange={handleChange}
+        className="p-2 rounded bg-gray-800"
+      >
+        <option value="">Selecione a categoria</option>
+        {categorias.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.nome}
+          </option>
+        ))}
+      </select>
 
       <textarea
         name="descricao"

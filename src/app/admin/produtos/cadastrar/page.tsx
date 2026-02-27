@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cadastrarProduto } from '@/src/services/produtos';
+import { listarCategorias, Categoria } from '@/src/services/categorias';
 import { supabase } from '@/supabaseClient';
 
 export default function CadastrarProduto() {
@@ -9,8 +10,18 @@ export default function CadastrarProduto() {
   const [descricao, setDescricao] = useState("");
   const [detalhes, setDetalhes] = useState("");
   const [fornecedor, setFornecedor] = useState("");
+  const [categoriaId, setCategoriaId] = useState("");
   const [link, setLink] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+
+  useEffect(() => {
+    async function carregarCategorias() {
+      const { data, error } = await listarCategorias();
+      if (!error && data) setCategorias(data);
+    }
+    carregarCategorias();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +55,7 @@ export default function CadastrarProduto() {
         detalhes,
         fornecedor,
         link,
+        ...(categoriaId ? { categoria_id: Number(categoriaId) } : {}),
         image: uploadData.path
       });
 
@@ -111,6 +123,19 @@ export default function CadastrarProduto() {
           value={detalhes}
           onChange={(e) => setDetalhes(e.target.value)}
         />
+
+        <select
+          className="w-full p-3 rounded bg-zinc-800"
+          value={categoriaId}
+          onChange={(e) => setCategoriaId(e.target.value)}
+        >
+          <option value="">Selecione a categoria</option>
+          {categorias.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.nome}
+            </option>
+          ))}
+        </select>
 
         <input
           className="w-full p-3 rounded bg-zinc-800"

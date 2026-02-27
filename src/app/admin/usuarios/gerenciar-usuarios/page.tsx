@@ -10,7 +10,7 @@ export default function CatalogoAdmin() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [termo, setTermo] = useState('');
   const [selecionados, setSelecionados] = useState<number[]>([]);
-  const [form, setForm] = useState({ nome: '', email: '', role: 'user' });
+  const [form, setForm] = useState({ nome: '', email: '', senha: '', role: 'user' });
   const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -33,21 +33,28 @@ export default function CatalogoAdmin() {
       return;
     }
 
+    const payload = {
+      nome: form.nome,
+      email: form.email,
+      role: form.role,
+      ...(form.senha ? { senha: form.senha } : {}),
+    };
+
     if (editingId) {
-      const { error } = await atualizarUsuario(editingId, form);
+      const { error } = await atualizarUsuario(editingId, payload);
       if (error) {
         alert('Erro ao atualizar usuário');
         return;
       }
     } else {
-      const { error } = await criarUsuario(form);
+      const { error } = await criarUsuario(payload);
       if (error) {
         alert('Erro ao cadastrar usuário');
         return;
       }
     }
 
-    setForm({ nome: '', email: '', role: 'user' });
+    setForm({ nome: '', email: '', senha: '', role: 'user' });
     setEditingId(null);
     const { data } = await listarUsuarios(termo);
     setUsuarios(data || []);
@@ -55,7 +62,7 @@ export default function CatalogoAdmin() {
 
   function editarUsuario(usuario: Usuario) {
     setEditingId(usuario.id);
-    setForm({ nome: usuario.nome, email: usuario.email, role: usuario.role });
+    setForm({ nome: usuario.nome, email: usuario.email, senha: '', role: usuario.role });
   }
 
   async function removerUsuario(id: number) {
@@ -136,6 +143,13 @@ export default function CatalogoAdmin() {
                 placeholder="Email"
                 className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
               />
+              <input
+                type="password"
+                value={form.senha}
+                onChange={(e) => setForm({ ...form, senha: e.target.value })}
+                placeholder="Senha"
+                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+              />
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
@@ -155,7 +169,7 @@ export default function CatalogoAdmin() {
                   <button
                     onClick={() => {
                       setEditingId(null);
-                      setForm({ nome: '', email: '', role: 'user' });
+                      setForm({ nome: '', email: '', senha: '', role: 'user' });
                     }}
                     className="bg-zinc-800 text-white px-4 py-2 rounded text-sm"
                   >

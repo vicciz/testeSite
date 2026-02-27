@@ -26,6 +26,21 @@ export default function Cadastro() {
     }
 
     if (data?.user) {
+      const { error: insertError } = await supabase
+        .from("clientes")
+        .insert({
+          nome,
+          email,
+          senha,
+          role: "user",
+        });
+
+      if (insertError) {
+        console.error(insertError);
+        alert("Erro ao salvar no banco de dados");
+        return;
+      }
+
       alert("Cadastro realizado com sucesso! Verifique seu email.");
       window.location.href = "/login";
     }

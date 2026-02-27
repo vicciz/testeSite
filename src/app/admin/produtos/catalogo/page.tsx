@@ -9,7 +9,8 @@ interface Produto {
   id: number;
   nome: string;
   preco: string;
-  categoria: string;
+  categoria_id?: number | null;
+  categorias?: { nome: string } | null;
   image: File | string;
   rating: string;
 }
@@ -102,7 +103,7 @@ export default function CatalogoAdmin() {
 
               <td>{p.nome}</td>
               <td>R$ {p.preco}</td>
-              <td>{p.categoria}</td>
+              <td>{p.categorias?.nome ?? p.categoria_id ?? '-'}</td>
 
               <td className="flex gap-3">
                 <Link
