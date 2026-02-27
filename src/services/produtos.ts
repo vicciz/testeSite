@@ -1,60 +1,93 @@
+// services/produtos.ts – wrapper around Supabase table `produtos`
+import { supabase } from '../../supabaseClient';
 
- export interface Produto {
+export interface Produto {
   id: number;
-
   nome: string;
   preco: string;
-  link: string;
-
-  rating: number | null;
-  reviews: number | null;
-
+  originalPreco?: string;
+  categoria: string;
   image: string | null;
-
-  categoria: string | null;
-
-  descricao: string;
-  detalhes: string;
-
-  imagem1: string | null;
-  imagem2: string | null;
-  imagem3: string | null;
-
-  fornecedor: string | null;
+  image1?: string | null;
+  image2?: string | null;
+  image3?: string | null;
+  rating?: string;
+  reviews?: number;
+  descricao?: string;
+  detalhes?: string;
+  link?: string;
+  fornecedor?: string | null;
 }
 
+/**
+ * List all products, optionally filtering by categoria and/or tipo_cosmetico
+ */
+export async function listarProdutos(
+  categoria?: string,
+  tipo?: string
+): Promise<{ data: Produto[] | null; error: any }> {
+  let query = supabase.from('produtos').select('*');
 
-export async function cadastrarProduto(produto: any) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cadastrar-produto.php`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(produto)
-  });
+  if (categoria && categoria !== 'Todos') {
+    query = query.eq('categoria', categoria);
+  }
+  if (tipo && tipo !== 'Todos') {
+    query = query.eq('tipo_cosmetico', tipo);
+  }
 
-  return res.json();
+  const { data, error } = await query;
+  return { data, error };
 }
 
-export async function listarProdutos(categoria?: string, tipo?: string) {
-  const params = new URLSearchParams();
-
-  if (categoria && categoria !== 'Todos') params.append('categoria', categoria);
-  if (tipo && tipo !== 'Todos') params.append('tipo_cosmetico', tipo);
-
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/listar-produtos.php?${params.toString()}`);
-  return res.json();
+/**
+ * Fetch a single product by id
+ */
+export async function buscarProduto(
+  id: number
+): Promise<{ data: Produto | null; error: any }> {
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('id', id)
+    .single();
+  return { data, error };
 }
 
+/**
+ * Create or update product record. Images should already be uploaded to
+ * Supabase Storage; pass the public path in the object.
+ */
+export async function cadastrarProduto(
+  produto: Partial<Produto>
+): Promise<{ data: Produto | null; error: any }> {
+  const { data, error } = await supabase
+    .from('produtos')
+    .insert(produto)
+    .select()
+    .single();
+  return { data, error };
+}
 
-export async function excluirProduto(id: number) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/excluir-produto.php`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ id })
-  });
+export async function editarProduto(
+  id: number,
+  produto: Partial<Produto>
+): Promise<{ data: Produto | null; error: any }> {
+  const { data, error } = await supabase
+    .from('produtos')
+    .update(produto)
+    .eq('id', id)
+    .select()
+    .single();
+  return { data, error };
+}
 
-  return res.json();
+export async function excluirProduto(
+  id: number
+): Promise<{ data: Produto | null; error: any }> {
+  const { data, error } = await supabase
+    .from('produtos')
+    .delete()
+    .eq('id', id)
+    .single();
+  return { data, error };
 }

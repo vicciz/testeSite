@@ -1,26 +1,29 @@
-export async function registrar(nome: string, email: string, senha: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const response = await fetch(`${apiUrl}/registro.php`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ nome, email, senha }),
-  });
+import { supabase } from '../../supabaseClient';
 
-  return response.json();
+// register a new user; you can pass `nome` as metadata if required
+export async function registrar(
+  nome: string,
+  email: string,
+  senha: string
+) {
+  const { data, error } = await supabase.auth.signUp(
+    { email, password: senha },
+    { data: { nome } }
+  );
+  return { data, error };
 }
 
+// sign in existing user
 export async function login(email: string, senha: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const response = await fetch(`${apiUrl}/login.php`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, senha }),
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password: senha,
   });
+  return { data, error };
+}
 
-  return response.json();
-};
+export async function logout() {
+  const { error } = await supabase.auth.signOut();
+  return { error };
+}
 

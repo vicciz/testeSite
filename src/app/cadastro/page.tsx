@@ -11,14 +11,16 @@ export default function Cadastro() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const response = await registrar(nome, email, senha);
-    console.log(response);
+    const { data, error } = await registrar(nome, email, senha);
 
-    if (response.success) {
-      alert("Cadastro realizado com sucesso!");
-    } else {
-      alert(response.message || "Erro ao cadastrar");
+    if (error) {
+      console.error(error);
+      alert(error.message || "Erro ao cadastrar");
+      return;
     }
+
+    alert("Cadastro realizado com sucesso! Verifique seu email.");
+    window.location.href = "/login";
   }
 
   return (

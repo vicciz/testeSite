@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { buscarProduto, editarProduto } from '@/src/services/produtos';
+import { supabase } from '@/supabaseClient';
 
 export default function EditarProduto() {
   const searchParams = useSearchParams();
@@ -28,22 +30,20 @@ export default function EditarProduto() {
     async function carregar() {
       setLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buscar-produto.php?id=${id}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const { data: produto, error } = await buscarProduto(Number(id));
+        if (error) throw error;
 
-        if (data && data.produto) {
-          const p: any = data.produto;
+        if (produto) {
           const sanitized = {
-            nome: p.nome ?? "",
-            preco: p.preco ?? "",
-            link: p.link ?? "",
-            rating: p.rating ?? "",
-            reviews: p.reviews ?? "",
-            categoria: p.categoria ?? "",
-            descricao: p.descricao ?? "",
-            detalhes: p.detalhes ?? "",
-            fornecedor: p.fornecedor ?? "",
+            nome: produto.nome ?? "",
+            preco: produto.preco ?? "",
+            link: produto.link ?? "",
+            rating: produto.rating ?? "",
+            reviews: produto.reviews ?? "",
+            categoria: produto.categoria ?? "",
+            descricao: produto.descricao ?? "",
+            detalhes: produto.detalhes ?? "",
+            fornecedor: produto.fornecedor ?? "",
             image: null,
           };
 
@@ -81,34 +81,58 @@ export default function EditarProduto() {
     e.preventDefault();
     setLoading(true);
 
-    const formData = new FormData();
+    try {
+      let imagePath = undefined;
 
-    formData.append("id", String(id));
-    formData.append("nome", form.nome);
-    formData.append("preco", form.preco);
-    formData.append("link", form.link);
-    formData.append("rating", form.rating);
-    formData.append("reviews", form.reviews);
-    formData.append("descricao", form.descricao);
-    formData.append("detalhes", form.detalhes);
-    formData.append("fornecedor", form.fornecedor);
+      // Upload new image if provided
+      if (form.image) {
+        const fileName = `${Date.now()}-${form.image.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('produtos')
+          .upload(fileName, form.image, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-    if (form.image) {
-      formData.append("image", form.image);
-    }
+        if (uploadError) {
+          console.error('Erro ao fazer upload:', uploadError);
+          alert('Erro ao fazer upload da imagem');
+          setLoading(false);
+          return;
+        }
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/editar-produto.php`, {
-      method: "POST",
-      body: formData,
-    });
+        imagePath = uploadData.path;
+      }
 
-    const data = await res.json();
-    setLoading(false);
+      const updateData: any = {
+        nome: form.nome,
+        preco: form.preco,
+        link: form.link,
+        rating: form.rating,
+        reviews: form.reviews,
+        descricao: form.descricao,
+        detalhes: form.detalhes,
+        fornecedor: form.fornecedor,
+      };
 
-    if (data.status === "ok") {
-      alert("Produto atualizado com sucesso!");
-    } else {
-      alert(data.msg || "Erro ao atualizar produto");
+      if (imagePath) {
+        updateData.image = imagePath;
+      }
+
+      const { data, error } = await editarProduto(Number(id), updateData);
+      setLoading(false);
+
+      if (error) {
+        console.error('Erro ao atualizar:', error);
+        alert('Erro ao atualizar produto');
+        return;
+      }
+
+      alert('Produto atualizado com sucesso!');
+    } catch (err) {
+      console.error('Erro:', err);
+      setLoading(false);
+      alert('Erro ao atualizar produto');
     }
   };
 

@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { cadastrarProduto } from '@/src/services/produtos';
+import { supabase } from '@/supabaseClient';
 
 export default function CadastrarProduto() {
   const [nome, setNome] = useState("");
@@ -18,27 +20,43 @@ export default function CadastrarProduto() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("nome", nome);
-    formData.append("preco", preco);
-    formData.append("descricao", descricao);
-    formData.append("detalhes", detalhes);
-    formData.append("fornecedor", fornecedor);
-    formData.append("link", link);
-    formData.append("image", imageFile);
-
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cadastrar-produto.php`, {
-        method: "POST",
-        body: formData,
+      // 1) Upload image to Supabase Storage
+      const fileName = `${Date.now()}-${imageFile.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('produtos')
+        .upload(fileName, imageFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('Erro ao fazer upload:', uploadError);
+        alert('Erro ao fazer upload da imagem');
+        return;
+      }
+
+      // 2) Create product record with the uploaded file path
+      const { data, error } = await cadastrarProduto({
+        nome,
+        preco,
+        descricao,
+        detalhes,
+        fornecedor,
+        link,
+        image: uploadData.path
       });
 
-      const data = await res.json();
-      console.log("RESPOSTA DA API:", data);
-      alert(data.msg);
+      if (error) {
+        console.error('Erro ao cadastrar produto:', error);
+        alert('Erro ao cadastrar produto');
+        return;
+      }
+
+      alert('Produto cadastrado com sucesso!');
     } catch (err) {
-      console.error("ERRO FETCH:", err);
-      alert("Erro ao conectar com o servidor");
+      console.error('Erro:', err);
+      alert('Erro ao conectar com o servidor');
     }
   };
 

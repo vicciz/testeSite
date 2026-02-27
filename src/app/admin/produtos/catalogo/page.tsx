@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { listarProdutos, excluirProduto } from "@/src/services/produtos";
+import { supabase } from '@/supabaseClient';
 
 interface Produto {
   id: number;
@@ -88,7 +89,7 @@ export default function CatalogoAdmin() {
                 
                 {p.image ? (
                   <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/api/uploads/${p.image}`}
+                    src={supabase.storage.from('produtos').getPublicUrl(p.image as string).data.publicUrl}
                     alt={p.nome}
                     className="w-20 h-20 object-cover rounded"
                   />

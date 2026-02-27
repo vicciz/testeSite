@@ -1,63 +1,39 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from "next/link";
-import { Filtro } from "./functions/filtros/filtrar-cosmestico";
-import { FiltroOutfit } from "./functions/filtros/filtrar-outfit";
-import { Produto } from '../services/produtos';
+import Link from 'next/link';
+import { FiltroOutfit } from './functions/filtros/filtrar-outfit';
+import { Produto, listarProdutos } from '../services/produtos';
+import { supabase } from '../../supabaseClient';
 
 export default function CarrosselProdutos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState<Produto[]>([]);
 
-  // Carrega os produtos do backend com os parâmetros de filtro
+  // fetch products from Supabase instead of PHP API
   useEffect(() => {
-    async function fetchProdutos(categoria?: string, tipo?: string) {
-      try {
-        const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}/filtrar-outfit.php`);
-        if (categoria) url.searchParams.append('categoria', categoria);
-        if (tipo) url.searchParams.append('tipo_cosmetico', tipo);
-
-        const response = await fetch(url.toString());
-
-        const data = await response.json();
-
-        if (data.status === 'ok') {
-          setProdutos(data.produtos);
-          setProdutosFiltrados(data.produtos);
-        } else {
-          setProdutos([]);
-          setProdutosFiltrados([]);
-        }
-      } catch (err) {
-        console.error('Erro ao listar produtos:', err);
+    async function load(categoria?: string, tipo?: string) {
+      const { data, error } = await listarProdutos(categoria, tipo);
+      if (error) {
+        console.error('Erro ao listar produtos:', error);
         setProdutos([]);
         setProdutosFiltrados([]);
+        return;
       }
+      setProdutos(data || []);
+      setProdutosFiltrados(data || []);
     }
 
-    // Chama a API sem filtros inicialmente
-    fetchProdutos();
+    load();
   }, []);
 
-  // Filtra os produtos por categoria e tipo_cosmetico
   const handleFiltroChange = async (categoria: string, tipo: string) => {
-    try {
-      const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}/filtrar-outfit.php`);
-      if (categoria) url.searchParams.append('categoria', categoria);
-      if (tipo) url.searchParams.append('tipo_cosmetico', tipo);
-
-      const response = await fetch(url.toString());
-      const data = await response.json();
-
-      if (data.status === 'ok') {
-        setProdutosFiltrados(data.produtos);
-      } else {
-        setProdutosFiltrados([]);
-      }
-    } catch (err) {
-      console.error('Erro ao buscar produtos filtrados:', err);
+    const { data, error } = await listarProdutos(categoria, tipo);
+    if (error) {
+      console.error('Erro ao buscar produtos filtrados:', error);
       setProdutosFiltrados([]);
+      return;
     }
+    setProdutosFiltrados(data || []);
   };
 
   return (
@@ -74,8 +50,8 @@ export default function CarrosselProdutos() {
         {produtosFiltrados.length > 0 ? (
           produtosFiltrados.map((p) => {
             const imageUrl = p.image
-              ? `${process.env.NEXT_PUBLIC_API_URL}/uploads/${p.image}`
-              : `${process.env.NEXT_PUBLIC_API_URL}/uploads/placeholder.png`;
+              ? supabase.storage.from('produtos').getPublicUrl(p.image).data.publicUrl
+              : '/placeholder.png';
 
             return (
               <Link
@@ -107,8 +83,8 @@ export default function CarrosselProdutos() {
         {produtosFiltrados.length > 0 ? (
           produtosFiltrados.map((p) => {
             const imageUrl = p.image
-              ? `${process.env.NEXT_PUBLIC_API_URL}/uploads/${p.image}`
-              : `${process.env.NEXT_PUBLIC_API_URL}/uploads/placeholder.png`;
+              ? supabase.storage.from('produtos').getPublicUrl(p.image).data.publicUrl
+              : '/placeholder.png';
 
             return (
               <Link

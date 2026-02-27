@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { ComprarButton } from '@/src/components/button';
 import Footer from '@/src/components/Footer';
 import { Cronometro } from '@/src/components/cronometro';
-import { Produto } from '@/src/services/produtos';
+import { Produto, buscarProduto } from '@/src/services/produtos';
+import { supabase } from '@/supabaseClient';
 
 
 export default function ProdutoDetalhe() {
@@ -17,14 +18,16 @@ export default function ProdutoDetalhe() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/produto.php?id=${id}`)
-      .then(res => res.json())
-      .then(data => {
+    buscarProduto(Number(id))
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
         setProduto(data);
-        if (data.image) {
-          setImagemAtiva(
-            `${process.env.NEXT_PUBLIC_API_URL}/uploads/${data.image}`
-          );
+        if (data?.image) {
+          const url = supabase.storage.from('produtos').getPublicUrl(data.image).data.publicUrl;
+          setImagemAtiva(url);
         }
       })
       .catch(err => console.error(err));
@@ -96,7 +99,7 @@ export default function ProdutoDetalhe() {
 
         <div className="flex justify-center gap-4 flex-wrap">
           {imagens.map((img, i) => {
-            const url = `${process.env.NEXT_PUBLIC_API_URL}/uploads/${img}`;
+            const url = supabase.storage.from('produtos').getPublicUrl(img).data.publicUrl;
 
             return (
               <div

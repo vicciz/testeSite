@@ -22,14 +22,22 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const resposta = await login(email, senha);
+    const { data, error } = await login(email, senha);
 
-    if (resposta.status === "ok" && resposta.user) {
-      localStorage.setItem("user", JSON.stringify(resposta.user));
+    if (error) {
+      alert(error.message ?? "Email ou senha inválidos");
+      return;
+    }
+
+    if (data?.user) {
+      // Store user in localStorage (or better: use context/session)
+      localStorage.setItem("user", JSON.stringify({ 
+        id: data.user.id, 
+        email: data.user.email,
+        role: 'user' // adjust based on your metadata
+      }));
       alert("Login realizado!");
       window.location.href = "/";
-    } else {
-      alert(resposta.msg ?? "Email ou senha inválidos");
     }
   }
 
