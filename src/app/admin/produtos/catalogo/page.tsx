@@ -145,7 +145,7 @@ export default function CatalogoAdmin() {
 
               <td className="flex gap-3">
                 <Link
-                  href={`/admin/produtos/editar/${p.id}`}
+                  href={`/admin/produtos/editar?id=${p.id}`}
                   className="text-indigo-600"
                 >
                   Editar
