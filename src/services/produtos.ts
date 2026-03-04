@@ -9,6 +9,10 @@ export interface Produto {
   rating?: number | null;
   reviews?: number | null;
   image?: string | null;
+  image1?: string | null;
+  image2?: string | null;
+  image3?: string | null;
+  imagem_detalhe?: string | null;
   oculto?: boolean | null;
   descricao?: string | null;
   detalhes?: string | null;

@@ -15,6 +15,7 @@ export default function ProdutoDetalhe() {
   const id = searchParams.get('id');
   const [produto, setProduto] = useState<Produto | null>(null);
   const [imagemAtiva, setImagemAtiva] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -26,9 +27,22 @@ export default function ProdutoDetalhe() {
           return;
         }
         setProduto(data);
-        if (data?.image) {
-          const url = supabase.storage.from('produtos').getPublicUrl(data.image).data.publicUrl;
-          setImagemAtiva(url);
+        if (data) {
+          const candidateImages = [
+            data.image,
+            data.image1,
+            data.image2,
+            data.image3,
+            data.imagem_detalhe,
+          ].filter(Boolean) as string[];
+
+          const first = candidateImages[0];
+          if (first) {
+            const url = first.startsWith('http')
+              ? first
+              : supabase.storage.from('produtos').getPublicUrl(first).data.publicUrl;
+            setImagemAtiva(url);
+          }
         }
       })
       .catch(err => console.error(err));
@@ -72,8 +86,23 @@ export default function ProdutoDetalhe() {
 
   const imagens = [
     produto.image,
- 
-  ].filter(Boolean);
+    produto.image1,
+    produto.image2,
+    produto.image3,
+    produto.imagem_detalhe,
+  ].filter(Boolean) as string[];
+
+  const detalheFallback = ([produto.image1, produto.image2, produto.image3].filter(Boolean) as string[])[0];
+
+  const imagemDetalheUrl = produto.imagem_detalhe
+    ? (produto.imagem_detalhe.startsWith('http')
+        ? produto.imagem_detalhe
+        : supabase.storage.from('produtos').getPublicUrl(produto.imagem_detalhe).data.publicUrl)
+    : detalheFallback
+      ? (detalheFallback.startsWith('http')
+          ? detalheFallback
+          : supabase.storage.from('produtos').getPublicUrl(detalheFallback).data.publicUrl)
+      : null;
 
   return (
     <div className="min-h-screen bg-[#e3eef9] text-[#1f2f4a]">
@@ -116,18 +145,23 @@ export default function ProdutoDetalhe() {
               <img
                 src={imagemAtiva!}
                 alt={produto.nome}
-                className="w-full h-[360px] object-contain bg-transparent"
+                className="w-full h-[520px] object-contain bg-transparent cursor-zoom-in"
+                onClick={() => setModalOpen(true)}
               />
             </div>
             <div className="mt-6 flex justify-center gap-3 flex-wrap">
               {imagens.map((img, i) => {
-                const url = supabase.storage.from('produtos').getPublicUrl(img).data.publicUrl;
+                const url = img.startsWith('http')
+                  ? img
+                  : supabase.storage.from('produtos').getPublicUrl(img).data.publicUrl;
 
                 return (
                   <button
                     key={i}
                     onClick={() => setImagemAtiva(url)}
-                    className="w-16 h-16 rounded-xl overflow-hidden border border-[#c9d9f2] bg-white/80 hover:scale-105 transition"
+                    className={`w-16 h-16 rounded-xl overflow-hidden border bg-white/80 hover:scale-105 transition ${
+                      imagemAtiva === url ? 'border-[#2f61b9] ring-2 ring-[#2f61b9]/20' : 'border-[#c9d9f2]'
+                    }`}
                   >
                     <img
                       src={url}
@@ -200,7 +234,13 @@ export default function ProdutoDetalhe() {
       <section className="py-14 bg-white/70 border-y border-[#c9d9f2] animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <div className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
-            <img src={imagemAtiva!} alt={produto.nome} className="w-full h-60 object-cover rounded-xl" />
+            {imagemDetalheUrl ? (
+              <img src={imagemDetalheUrl} alt={produto.nome} className="w-full h-60 object-contain rounded-xl bg-white" />
+            ) : (
+              <div className="w-full h-60 rounded-xl bg-slate-100 border border-[#dbe6f7] flex items-center justify-center text-sm text-[#6b84ab]">
+                Sem imagem detalhe
+              </div>
+            )}
           </div>
           <div>
             <h2 className="text-3xl font-semibold">Por que escolher a IMBALÁVEL</h2>
@@ -257,7 +297,13 @@ export default function ProdutoDetalhe() {
             </a>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
-            <img src={imagemAtiva!} alt={produto.nome} className="w-full h-60 object-cover rounded-xl" />
+            {imagemDetalheUrl ? (
+              <img src={imagemDetalheUrl} alt={produto.nome} className="w-full h-60 object-contain rounded-xl bg-white" />
+            ) : (
+              <div className="w-full h-60 rounded-xl bg-slate-100 border border-[#dbe6f7] flex items-center justify-center text-sm text-[#6b84ab]">
+                Sem imagem detalhe
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -298,6 +344,27 @@ export default function ProdutoDetalhe() {
 
       {/* FOOTER */}
       <Footer />
+
+      {modalOpen && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-6"
+          onClick={() => setModalOpen(false)}
+        >
+          <button
+            className="absolute top-6 right-6 text-white text-2xl"
+            aria-label="Fechar"
+            onClick={() => setModalOpen(false)}
+          >
+            ✕
+          </button>
+          <img
+            src={imagemAtiva!}
+            alt={produto.nome}
+            className="max-w-full max-h-[85vh] object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

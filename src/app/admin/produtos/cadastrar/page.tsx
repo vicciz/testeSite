@@ -13,6 +13,7 @@ export default function CadastrarProduto() {
   const [categoriaId, setCategoriaId] = useState("");
   const [link, setLink] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [detailImageFile, setDetailImageFile] = useState<File | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useEffect(() => {
@@ -47,6 +48,26 @@ export default function CadastrarProduto() {
         return;
       }
 
+      let detailImagePath: string | undefined = undefined;
+
+      if (detailImageFile) {
+        const detailFileName = `${Date.now()}-${detailImageFile.name}`;
+        const { data: detailUploadData, error: detailUploadError } = await supabase.storage
+          .from('produtos')
+          .upload(detailFileName, detailImageFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (detailUploadError) {
+          console.error('Erro ao fazer upload da imagem detalhe:', detailUploadError);
+          alert('Erro ao fazer upload da imagem detalhe');
+          return;
+        }
+
+        detailImagePath = detailUploadData.path;
+      }
+
       // 2) Create product record with the uploaded file path
       const { data, error } = await cadastrarProduto({
         nome,
@@ -56,7 +77,8 @@ export default function CadastrarProduto() {
         fornecedor,
         link,
         ...(categoriaId ? { categoria_id: Number(categoriaId) } : {}),
-        image: uploadData.path
+        image: uploadData.path,
+        ...(detailImagePath ? { imagem_detalhe: detailImagePath } : {})
       });
 
       if (error) {
@@ -107,6 +129,17 @@ export default function CadastrarProduto() {
           className="w-full p-3 rounded bg-slate-100 border border-black/10"
           onChange={(e) => {
             if (e.target.files) setImageFile(e.target.files[0]);
+          }}
+        />
+
+        <label className="text-sm text-zinc-700">Imagem detalhe (opcional)</label>
+
+        <input
+          type="file"
+          accept="image/*"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
+          onChange={(e) => {
+            if (e.target.files) setDetailImageFile(e.target.files[0]);
           }}
         />
 
