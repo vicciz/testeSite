@@ -60,6 +60,7 @@ export default function Cadastro() {
           {
             nome,
             email: normalizedEmail,
+            user_id: data.user.id,
             role: "user",
           },
           { onConflict: "email" }
