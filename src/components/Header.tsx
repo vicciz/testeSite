@@ -17,6 +17,12 @@ export default function Header() {
   const pathname = usePathname();
   const isProdutoPage = pathname?.startsWith('/produto');
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    window.location.href = '/';
+  };
+
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -92,7 +98,15 @@ export default function Header() {
                 Criar conta
               </Link>
             </>
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-full border border-blue-200 text-[#23446d] bg-white/80 hover:bg-[#f3f7ff] transition"
+            >
+              Sair
+            </button>
+          )}
         </nav>
 
         {/* Mobile menu button */}
@@ -132,7 +146,18 @@ export default function Header() {
                     Criar conta
                   </Link>
                 </>
-              ) : null}
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="px-4 py-2 rounded-full border border-blue-200 text-[#23446d] bg-white/80 hover:bg-[#f3f7ff] transition"
+                >
+                  Sair
+                </button>
+              )}
             </div>
           </div>
         </div>
