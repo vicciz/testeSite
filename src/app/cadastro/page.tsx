@@ -54,22 +54,25 @@ export default function Cadastro() {
     }
 
     if (data?.user) {
-      const { error: insertError } = await supabase
-        .from("clientes")
-        .upsert(
-          {
-            nome,
-            email: normalizedEmail,
-            user_id: data.user.id,
-            role: "user",
-          },
-          { onConflict: "email" }
-        );
+      const hasSession = !!data?.session;
+      if (hasSession) {
+        const { error: insertError } = await supabase
+          .from("clientes")
+          .upsert(
+            {
+              nome,
+              email: normalizedEmail,
+              user_id: data.user.id,
+              role: "user",
+            },
+            { onConflict: "email" }
+          );
 
-      if (insertError) {
-        console.error(insertError);
-        alert(insertError.message || "Erro ao salvar no banco de dados");
-        return;
+        if (insertError) {
+          console.error(insertError);
+          alert(insertError.message || "Erro ao salvar no banco de dados");
+          return;
+        }
       }
 
       alert("Cadastro realizado com sucesso! Verifique seu email.");

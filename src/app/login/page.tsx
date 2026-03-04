@@ -48,19 +48,42 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       return;
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("clientes")
       .select("id,nome,email,role")
       .ilike("email", normalizedEmail)
       .single();
 
-    const rawRole = profile?.role?.toString().toLowerCase() || authData.user.user_metadata?.role?.toString().toLowerCase();
+    let resolvedProfile = profile;
+
+    if (profileError || !profile) {
+      const fallbackNome = authData.user.user_metadata?.nome || "";
+      const { data: createdProfile, error: createError } = await supabase
+        .from("clientes")
+        .upsert(
+          {
+            nome: fallbackNome,
+            email: normalizedEmail,
+            user_id: authData.user.id,
+            role: "user",
+          },
+          { onConflict: "email" }
+        )
+        .select("id,nome,email,role")
+        .single();
+
+      if (!createError && createdProfile) {
+        resolvedProfile = createdProfile;
+      }
+    }
+
+    const rawRole = resolvedProfile?.role?.toString().toLowerCase() || authData.user.user_metadata?.role?.toString().toLowerCase();
     const normalizedRole = rawRole === "admin" || rawRole === "sim" || adminEmails.includes(normalizedEmail) ? "admin" : "user";
 
     localStorage.setItem("user", JSON.stringify({
-      id: profile?.id || authData.user.id,
-      nome: profile?.nome || "",
-      email: profile?.email || normalizedEmail,
+      id: resolvedProfile?.id || authData.user.id,
+      nome: resolvedProfile?.nome || "",
+      email: resolvedProfile?.email || normalizedEmail,
       role: normalizedRole,
     }));
     alert("Login realizado!");
