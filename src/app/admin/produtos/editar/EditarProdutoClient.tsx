@@ -28,6 +28,10 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
     imagem_detalhe: null,
   });
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [imagemPrincipalAtual, setImagemPrincipalAtual] = useState<string | null>(null);
+  const [imagemDetalheAtual, setImagemDetalheAtual] = useState<string | null>(null);
+  const [previewImagemPrincipal, setPreviewImagemPrincipal] = useState<string | null>(null);
+  const [previewImagemDetalhe, setPreviewImagemDetalhe] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -44,6 +48,13 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
         if (error) throw error;
 
         if (produto) {
+          const getPublicUrl = (path?: string | null) => {
+            if (!path) return null;
+            return path.startsWith('http')
+              ? path
+              : supabase.storage.from('produtos').getPublicUrl(path).data.publicUrl;
+          };
+
           const sanitized = {
             nome: produto.nome ?? "",
             preco: produto.preco ?? "",
@@ -59,6 +70,10 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
           };
 
           setForm(sanitized);
+          setImagemPrincipalAtual(getPublicUrl(produto.image));
+          setImagemDetalheAtual(getPublicUrl(produto.imagem_detalhe));
+          setPreviewImagemPrincipal(null);
+          setPreviewImagemDetalhe(null);
         }
       } catch (error) {
         console.error("Erro ao carregar produto:", error);
@@ -82,18 +97,28 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewImagemPrincipal(URL.createObjectURL(file));
+    }
+
     setForm({
       ...form,
-      image: e.target.files[0],
+      image: file,
     });
   };
 
   const handleDetailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewImagemDetalhe(URL.createObjectURL(file));
+    }
+
     setForm({
       ...form,
-      imagem_detalhe: e.target.files[0],
+      imagem_detalhe: file,
     });
   };
 
@@ -290,6 +315,37 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
         onChange={handleDetailFileChange}
         className="p-2"
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl border border-black/10 p-3">
+          <p className="text-sm text-zinc-600 mb-2">Imagem principal</p>
+          {previewImagemPrincipal || imagemPrincipalAtual ? (
+            <img
+              src={previewImagemPrincipal || imagemPrincipalAtual || ''}
+              alt="Imagem principal"
+              className="w-full h-52 object-contain rounded-lg bg-white"
+            />
+          ) : (
+            <div className="w-full h-52 rounded-lg bg-slate-100 border border-black/10 flex items-center justify-center text-sm text-zinc-500">
+              Sem imagem
+            </div>
+          )}
+        </div>
+        <div className="bg-white rounded-xl border border-black/10 p-3">
+          <p className="text-sm text-zinc-600 mb-2">Imagem detalhe</p>
+          {previewImagemDetalhe || imagemDetalheAtual ? (
+            <img
+              src={previewImagemDetalhe || imagemDetalheAtual || ''}
+              alt="Imagem detalhe"
+              className="w-full h-52 object-contain rounded-lg bg-white"
+            />
+          ) : (
+            <div className="w-full h-52 rounded-lg bg-slate-100 border border-black/10 flex items-center justify-center text-sm text-zinc-500">
+              Sem imagem
+            </div>
+          )}
+        </div>
+      </div>
 
       <button
         type="submit"
