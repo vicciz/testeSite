@@ -6,9 +6,13 @@ import { buscarProduto, editarProduto } from '@/src/services/produtos';
 import { listarCategorias, Categoria } from '@/src/services/categorias';
 import { supabase } from '@/supabaseClient';
 
-export default function EditarProduto() {
+interface EditarProdutoProps {
+  id?: string;
+}
+
+export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id") ?? "";
+  const id = idProp ?? searchParams.get("id") ?? "";
 
   const [form, setForm] = useState<any>({
     nome: "",
@@ -21,6 +25,7 @@ export default function EditarProduto() {
     detalhes: "",
     fornecedor: "",
     image: null,
+    imagem_detalhe: null,
   });
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
@@ -50,6 +55,7 @@ export default function EditarProduto() {
             detalhes: produto.detalhes ?? "",
             fornecedor: produto.fornecedor ?? "",
             image: null,
+            imagem_detalhe: null,
           };
 
           setForm(sanitized);
@@ -82,12 +88,28 @@ export default function EditarProduto() {
     });
   };
 
+  const handleDetailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    setForm({
+      ...form,
+      imagem_detalhe: e.target.files[0],
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    if (!id) {
+      alert('ID do produto inválido.');
+      setLoading(false);
+      return;
+    }
+
     try {
       let imagePath = undefined;
+      let detailImagePath = undefined;
 
       // Upload new image if provided
       if (form.image) {
@@ -101,12 +123,31 @@ export default function EditarProduto() {
 
         if (uploadError) {
           console.error('Erro ao fazer upload:', uploadError);
-          alert('Erro ao fazer upload da imagem');
+          alert(`Erro ao fazer upload da imagem: ${uploadError.message}`);
           setLoading(false);
           return;
         }
 
         imagePath = uploadData.path;
+      }
+
+      if (form.imagem_detalhe) {
+        const detailFileName = `${Date.now()}-${form.imagem_detalhe.name}`;
+        const { data: detailUploadData, error: detailUploadError } = await supabase.storage
+          .from('produtos')
+          .upload(detailFileName, form.imagem_detalhe, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (detailUploadError) {
+          console.error('Erro ao fazer upload da imagem detalhe:', detailUploadError);
+          alert(`Erro ao fazer upload da imagem detalhe: ${detailUploadError.message}`);
+          setLoading(false);
+          return;
+        }
+
+        detailImagePath = detailUploadData.path;
       }
 
       const updateData: any = {
@@ -125,12 +166,16 @@ export default function EditarProduto() {
         updateData.image = imagePath;
       }
 
+      if (detailImagePath) {
+        updateData.imagem_detalhe = detailImagePath;
+      }
+
       const { data, error } = await editarProduto(Number(id), updateData);
       setLoading(false);
 
       if (error) {
         console.error('Erro ao atualizar:', error);
-        alert('Erro ao atualizar produto');
+        alert(`Erro ao atualizar produto: ${error.message}`);
         return;
       }
 
@@ -234,6 +279,15 @@ export default function EditarProduto() {
         name="image"
         accept="image/*"
         onChange={handleFileChange}
+        className="p-2"
+      />
+
+      <label>Imagem Detalhe</label>
+      <input
+        type="file"
+        name="imagem_detalhe"
+        accept="image/*"
+        onChange={handleDetailFileChange}
         className="p-2"
       />
 
