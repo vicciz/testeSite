@@ -7,12 +7,40 @@ export default function Cadastro() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const getPasswordStrength = (value: string) => {
+    let score = 0;
+    if (value.length >= 8) score += 1;
+    if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score += 1;
+    if (/\d/.test(value)) score += 1;
+    if (/[^\w\s]/.test(value)) score += 1;
+
+    if (score <= 1) return { label: "Fraca", color: "bg-red-500", percent: 25 };
+    if (score === 2) return { label: "Média", color: "bg-yellow-500", percent: 50 };
+    if (score === 3) return { label: "Boa", color: "bg-blue-500", percent: 75 };
+    return { label: "Forte", color: "bg-green-600", percent: 100 };
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!normalizedEmail || !senha || !confirmarSenha) {
+      alert("Preencha email e senha");
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      alert("As senhas não conferem");
+      return;
+    }
+
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password: senha,
       options: {
         data: { nome },
@@ -28,15 +56,18 @@ export default function Cadastro() {
     if (data?.user) {
       const { error: insertError } = await supabase
         .from("clientes")
-        .insert({
-          nome,
-          email,
-          role: "user",
-        });
+        .upsert(
+          {
+            nome,
+            email: normalizedEmail,
+            role: "user",
+          },
+          { onConflict: "email" }
+        );
 
       if (insertError) {
         console.error(insertError);
-        alert("Erro ao salvar no banco de dados");
+        alert(insertError.message || "Erro ao salvar no banco de dados");
         return;
       }
 
@@ -94,14 +125,61 @@ export default function Cadastro() {
             <label className="block text-sm mb-1 text-zinc-600">
               Senha
             </label>
-            <input
-              type="password"
-              value={senha}
-              onChange={e => setSenha(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-lg bg-white border border-black/10 
-                         focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            <div className="relative">
+              <input
+                type={mostrarSenha ? "text" : "password"}
+                value={senha}
+                onChange={e => setSenha(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-lg bg-white border border-black/10 
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarSenha(!mostrarSenha)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-900"
+              >
+                {mostrarSenha ? "🙈" : "👁️"}
+              </button>
+            </div>
+            {senha && (() => {
+              const strength = getPasswordStrength(senha);
+              return (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between text-xs text-zinc-500 mb-1">
+                    <span>Segurança: {strength.label}</span>
+                    <span>{strength.percent}%</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-zinc-200 overflow-hidden">
+                    <div className={`h-full ${strength.color}`} style={{ width: `${strength.percent}%` }} />
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Confirmar senha */}
+          <div>
+            <label className="block text-sm mb-1 text-zinc-600">
+              Confirmar senha
+            </label>
+            <div className="relative">
+              <input
+                type={mostrarConfirmarSenha ? "text" : "password"}
+                value={confirmarSenha}
+                onChange={e => setConfirmarSenha(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-lg bg-white border border-black/10 
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-900"
+              >
+                {mostrarConfirmarSenha ? "🙈" : "👁️"}
+              </button>
+            </div>
           </div>
 
           {/* Botão */}
