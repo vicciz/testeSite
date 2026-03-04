@@ -22,23 +22,27 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const { data, error } = await supabase
-      .from("clientes")
-      .select("id,nome,email,role")
-      .eq("email", email)
-      .eq("senha", senha)
-      .single();
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
 
-    if (error || !data) {
+    if (authError || !authData?.user) {
       alert("Email ou senha inválidos");
       return;
     }
 
+    const { data: profile } = await supabase
+      .from("clientes")
+      .select("id,nome,email,role")
+      .eq("email", email)
+      .single();
+
     localStorage.setItem("user", JSON.stringify({
-      id: data.id,
-      nome: data.nome,
-      email: data.email,
-      role: data.role,
+      id: profile?.id || authData.user.id,
+      nome: profile?.nome || "",
+      email: profile?.email || email,
+      role: profile?.role || "user",
     }));
     alert("Login realizado!");
     window.location.href = "/";

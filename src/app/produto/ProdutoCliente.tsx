@@ -38,6 +38,16 @@ export default function ProdutoDetalhe() {
     return <p className="text-center mt-20 text-zinc-900">Carregando produto...</p>;
   }
 
+  const maskedLink = (() => {
+    if (!produto.link) return "link protegido";
+    try {
+      const url = new URL(produto.link);
+      return `${url.host}/•••`;
+    } catch {
+      return produto.link.replace(/^https?:\/\//, "").replace(/\/.*/, "/•••");
+    }
+  })();
+
   const imagens = [
     produto.image,
  
@@ -76,6 +86,7 @@ export default function ProdutoDetalhe() {
             </div>
 
             <p className="mt-4 text-sm text-[#56719a]">⚠️ Estoque limitado</p>
+            <p className="mt-2 text-xs text-[#6b84ab]">Link protegido: {maskedLink}</p>
           </div>
 
           <div className="bg-[#a9c3e6] rounded-3xl p-8 shadow-2xl">
@@ -151,21 +162,14 @@ export default function ProdutoDetalhe() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF #2 */}
+      {/* DESCRIÇÃO */}
       <section className="py-14">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold text-center">Social Proof</h2>
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              'Fixação acima do esperado.',
-              'Entrega rápida e impecável.',
-              'Fragrância marcante e sofisticada.',
-            ].map((t) => (
-              <div key={t} className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
-                <p className="text-[#56719a]">“{t}”</p>
-                <p className="mt-4 text-sm text-[#6b84ab]">Cliente verificado</p>
-              </div>
-            ))}
+          <h2 className="text-3xl font-semibold text-center">Descrição do Produto</h2>
+          <div className="mt-8 bg-white rounded-2xl p-8 border border-[#dbe6f7] shadow-lg">
+            <p className="text-[#56719a] text-lg leading-relaxed">
+              {produto.detalhes || produto.descricao}
+            </p>
           </div>
         </div>
       </section>
@@ -194,14 +198,19 @@ export default function ProdutoDetalhe() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF #3 (UGC) */}
+      {/* QUEM COMPROU DIZ */}
       <section className="py-14">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold text-center">Social Proof</h2>
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-4">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#dbe6f7] h-36 flex items-center justify-center text-[#6b84ab]">
-                ▶
+          <h2 className="text-3xl font-semibold text-center">Quem comprou diz</h2>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              'Chegou rápido e a fragrância é marcante. Recomendo!',
+              'Fixação excelente, recebi vários elogios.',
+              'Produto original e muito bem embalado.',
+            ].map((texto, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-[#dbe6f7] p-6 shadow-lg">
+                <p className="text-[#56719a]">“{texto}”</p>
+                <p className="mt-4 text-xs text-[#6b84ab]">Compra verificada</p>
               </div>
             ))}
           </div>

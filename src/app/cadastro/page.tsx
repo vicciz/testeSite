@@ -31,7 +31,6 @@ export default function Cadastro() {
         .insert({
           nome,
           email,
-          senha,
           role: "user",
         });
 
