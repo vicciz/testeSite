@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import EditarProdutoClient from '../EditarProdutoClient';
 import { supabase } from '@/supabaseClient';
 
@@ -6,7 +7,11 @@ interface PageProps {
 }
 
 export default function EditarProdutoPage({ params }: PageProps) {
-  return <EditarProdutoClient id={params.id} />;
+  return (
+    <Suspense fallback={<div className="text-zinc-900 p-10">Carregando...</div>}>
+      <EditarProdutoClient id={params.id} />
+    </Suspense>
+  );
 }
 
 export const dynamicParams = false;
