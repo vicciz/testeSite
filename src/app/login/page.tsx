@@ -53,11 +53,14 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       .eq("email", normalizedEmail)
       .single();
 
+    const rawRole = profile?.role?.toString().toLowerCase();
+    const normalizedRole = rawRole === "admin" || rawRole === "sim" ? "admin" : "user";
+
     localStorage.setItem("user", JSON.stringify({
       id: profile?.id || authData.user.id,
       nome: profile?.nome || "",
       email: profile?.email || normalizedEmail,
-      role: profile?.role || "user",
+      role: normalizedRole,
     }));
     alert("Login realizado!");
     window.location.href = "/";
