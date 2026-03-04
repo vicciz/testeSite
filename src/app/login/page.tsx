@@ -22,26 +22,41 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !senha) {
+      alert("Informe email e senha");
+      return;
+    }
+
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")
+    ) {
+      alert("Configuração do Supabase ausente. Verifique as variáveis de ambiente.");
+      return;
+    }
+
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalizedEmail,
       password: senha,
     });
 
     if (authError || !authData?.user) {
-      alert("Email ou senha inválidos");
+      alert(authError?.message || "Email ou senha inválidos");
       return;
     }
 
     const { data: profile } = await supabase
       .from("clientes")
       .select("id,nome,email,role")
-      .eq("email", email)
+      .eq("email", normalizedEmail)
       .single();
 
     localStorage.setItem("user", JSON.stringify({
       id: profile?.id || authData.user.id,
       nome: profile?.nome || "",
-      email: profile?.email || email,
+      email: profile?.email || normalizedEmail,
       role: profile?.role || "user",
     }));
     alert("Login realizado!");
