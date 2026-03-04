@@ -7,7 +7,7 @@ export default function Page() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       {/* 1. HEADLINE */}
-      <section className="pt-28 pb-16">
+      <section className="pt-28 pb-16 animate-enterRight" style={{ animationDelay: '0.05s' }}>
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 text-xs tracking-widest text-slate-600">
@@ -61,7 +61,7 @@ export default function Page() {
       </section>
 
       {/* 2. PROBLEMA */}
-      <section className="py-16 bg-white border-y border-slate-200">
+      <section className="py-16 bg-white border-y border-slate-200 animate-enterRight" style={{ animationDelay: '0.12s' }}>
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { title: 'Escolha confusa', desc: 'Muitas opções e pouca orientação confiável.' },
@@ -77,7 +77,7 @@ export default function Page() {
       </section>
 
       {/* 3. SOLUÇÃO / SERVIÇOS */}
-      <section className="py-16">
+      <section className="py-16 animate-enterRight" style={{ animationDelay: '0.18s' }}>
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold">Nossa solução</h2>
           <p className="text-slate-600 mt-3 max-w-2xl">
@@ -100,7 +100,7 @@ export default function Page() {
       </section>
 
       {/* 4. PROVA / PORTFÓLIO */}
-      <section id="destaques" className="py-16 bg-slate-100">
+      <section id="destaques" className="py-16 bg-slate-100 animate-enterRight" style={{ animationDelay: '0.24s' }}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
@@ -109,8 +109,10 @@ export default function Page() {
             </div>
             <a href="#cta" className="text-indigo-600 font-semibold">Quero ver tudo →</a>
           </div>
-          <div className="mt-8">
-            <CarrosselCosmeticos />
+          <div className="mt-8 flex justify-center">
+            <div className="w-full">
+              <CarrosselCosmeticos />
+            </div>
           </div>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600">
             <div className="surface-card p-5">
@@ -127,7 +129,7 @@ export default function Page() {
       </section>
 
       {/* 5. PROVAS / TESTEMUNHOS */}
-      <section className="py-16">
+      <section className="py-16 animate-enterRight" style={{ animationDelay: '0.3s' }}>
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold">O que clientes dizem</h2>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -146,7 +148,7 @@ export default function Page() {
       </section>
 
       {/* 6. SOBRE */}
-      <section className="py-16 bg-white border-y border-slate-200">
+      <section className="py-16 bg-white border-y border-slate-200 animate-enterRight" style={{ animationDelay: '0.36s' }}>
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
             <h2 className="text-3xl font-bold">Sobre a IMBALÁVEL</h2>
@@ -166,7 +168,7 @@ export default function Page() {
       </section>
 
       {/* 7. FAQ */}
-      <section id="faq" className="py-16">
+      <section id="faq" className="py-16 animate-enterRight" style={{ animationDelay: '0.42s' }}>
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-bold">Perguntas frequentes</h2>
           <div className="mt-8 space-y-4">
@@ -185,7 +187,7 @@ export default function Page() {
       </section>
 
       {/* 8. CTA */}
-      <section id="cta" className="py-16 bg-slate-900">
+      <section id="cta" className="py-16 bg-slate-900 animate-enterRight" style={{ animationDelay: '0.48s' }}>
         <div className="max-w-5xl mx-auto px-6 text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold">Pronto para escolher sua próxima assinatura?</h2>
           <p className="mt-4 text-slate-200">

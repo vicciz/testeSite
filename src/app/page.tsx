@@ -130,9 +130,11 @@ export default function Page() {
           </p>
         </div>
 
-        <CarrosselCosmeticos />
-        <CarrosselOutfit />
-        
+        <div className="flex justify-center">
+          <div className="w-full">
+            <CarrosselCosmeticos />
+          </div>
+        </div>
         
       </section>
 
