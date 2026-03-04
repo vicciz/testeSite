@@ -46,10 +46,10 @@ export default function Header() {
         <nav className="hidden md:flex gap-3 text-sm">
           {!user ? (
             <>
-              <Link href="/login" className="px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600">
+              <Link href="/login" className="px-4 py-2 rounded-full bg-[#2f61b9] text-white shadow-lg shadow-blue-600/25 hover:bg-[#244e96] transition">
                 Entrar
               </Link>
-              <Link href="/cadastro" className="px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600">
+              <Link href="/cadastro" className="px-4 py-2 rounded-full border border-blue-200 text-[#23446d] bg-white/80 hover:bg-[#f3f7ff] transition">
                 Criar conta
               </Link>
             </>
@@ -86,10 +86,10 @@ export default function Header() {
             <div className="flex gap-3 pt-2">
               {!user ? (
                 <>
-                  <Link href="/login" className="px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600" onClick={() => setMenuOpen(false)}>
+                  <Link href="/login" className="px-4 py-2 rounded-full bg-[#2f61b9] text-white shadow-lg shadow-blue-600/25 hover:bg-[#244e96] transition" onClick={() => setMenuOpen(false)}>
                     Entrar
                   </Link>
-                  <Link href="/cadastro" className="px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600" onClick={() => setMenuOpen(false)}>
+                  <Link href="/cadastro" className="px-4 py-2 rounded-full border border-blue-200 text-[#23446d] bg-white/80 hover:bg-[#f3f7ff] transition" onClick={() => setMenuOpen(false)}>
                     Criar conta
                   </Link>
                 </>
