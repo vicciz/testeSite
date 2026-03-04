@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { buscarProduto, editarProduto } from '@/src/services/produtos';
 import { listarCategorias, Categoria } from '@/src/services/categorias';
 import { supabase } from '@/supabaseClient';
 
 interface EditarProdutoProps {
-  id?: string;
+  id: string;
 }
 
 export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
-  const searchParams = useSearchParams();
-  const id = idProp ?? searchParams.get("id") ?? "";
+  const id = idProp ?? "";
 
   const [form, setForm] = useState<any>({
     nome: "",
