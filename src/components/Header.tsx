@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -11,6 +12,10 @@ interface User {
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const [hasProdutoHero, setHasProdutoHero] = useState(false);
+  const pathname = usePathname();
+  const isProdutoPage = pathname?.startsWith('/produto');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -19,8 +24,42 @@ export default function Header() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isProdutoPage) {
+      setHasProdutoHero(false);
+      setShowHeader(true);
+      return;
+    }
+
+    const hero = document.getElementById('produto-hero');
+    if (!hero) {
+      setHasProdutoHero(false);
+      setShowHeader(true);
+      return;
+    }
+
+    setHasProdutoHero(true);
+    setShowHeader(true);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowHeader(entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(hero);
+
+    return () => observer.disconnect();
+  }, [isProdutoPage]);
+
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur border-b border-black/10">
+    <>
+      <header
+        className={`fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur border-b border-black/10 transition-transform duration-300 ease-out ${
+          showHeader ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+        }`}
+      >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between text-zinc-900">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold">
@@ -98,6 +137,13 @@ export default function Header() {
           </div>
         </div>
       )}
-    </header>
+      </header>
+      <div
+        className={`transition-[height] duration-300 ease-out ${
+          hasProdutoHero && showHeader ? 'h-[72px]' : 'h-0'
+        }`}
+        aria-hidden="true"
+      />
+    </>
   );
 }

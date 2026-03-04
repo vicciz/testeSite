@@ -78,7 +78,7 @@ export default function ProdutoDetalhe() {
   return (
     <div className="min-h-screen bg-[#e3eef9] text-[#1f2f4a]">
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-24 pb-14 animate-fadeUp">
+      <section id="produto-hero" className="max-w-6xl mx-auto px-6 pt-24 pb-14 animate-fadeUp">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="bg-white/70 border border-[#c9d9f2] rounded-3xl p-8 shadow-xl">
             <span className="text-xs tracking-widest uppercase text-[#4f6b9b]">IMBALÁVEL</span>
