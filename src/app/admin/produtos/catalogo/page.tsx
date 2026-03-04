@@ -13,6 +13,7 @@ interface Produto {
   categorias?: { nome: string } | null;
   image: File | string;
   rating: string;
+  oculto?: boolean | null;
 }
 
 interface User {
@@ -30,8 +31,33 @@ export default function CatalogoAdmin() {
   }, []);
 
   async function carregar() {
-    const res = await listarProdutos();
-    if (res.status === "ok") setProdutos(res.produtos);
+    const { data, error } = await listarProdutos(undefined, undefined, true);
+    if (error) {
+      console.error('Erro ao carregar produtos:', error);
+      return;
+    }
+    setProdutos(data || []);
+  }
+
+  async function handleToggleOculto(id: number, ocultoAtual?: boolean | null) {
+    const { error } = await supabase
+      .from('produtos')
+      .update({ oculto: !ocultoAtual })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erro ao atualizar visibilidade:', error);
+      if (error.message?.toLowerCase().includes('column') && error.message?.toLowerCase().includes('oculto')) {
+        alert('A coluna "oculto" não existe. Crie uma coluna boolean em produtos com default false.');
+      } else {
+        alert(`Erro ao atualizar visibilidade: ${error.message}`);
+      }
+      return;
+    }
+
+    setProdutos(prev =>
+      prev.map(p => (p.id === id ? { ...p, oculto: !ocultoAtual } : p))
+    );
   }
 
   async function handleExcluir(id: number) {
@@ -77,6 +103,7 @@ export default function CatalogoAdmin() {
             <th className="p-2">Imagem</th>
             <th>Nome</th>
             <th>Categoria</th>
+            <th>Visibilidade</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -102,6 +129,19 @@ export default function CatalogoAdmin() {
 
               <td>{p.nome}</td>
               <td>{p.categorias?.nome ?? p.categoria_id ?? '-'}</td>
+
+              <td>
+                <button
+                  onClick={() => handleToggleOculto(p.id, p.oculto)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold border transition ${
+                    p.oculto
+                      ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                  }`}
+                >
+                  {p.oculto ? 'Oculto' : 'Visível'}
+                </button>
+              </td>
 
               <td className="flex gap-3">
                 <Link

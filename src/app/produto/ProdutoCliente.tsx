@@ -116,7 +116,7 @@ export default function ProdutoDetalhe() {
               <img
                 src={imagemAtiva!}
                 alt={produto.nome}
-                className="w-full h-[360px] object-cover"
+                className="w-full h-[360px] object-contain bg-transparent"
               />
             </div>
             <div className="mt-6 flex justify-center gap-3 flex-wrap">

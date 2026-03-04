@@ -9,6 +9,7 @@ export interface Produto {
   rating?: number | null;
   reviews?: number | null;
   image?: string | null;
+  oculto?: boolean | null;
   descricao?: string | null;
   detalhes?: string | null;
   fornecedor?: string | null;
@@ -21,7 +22,8 @@ export interface Produto {
  */
 export async function listarProdutos(
   categoria?: string,
-  tipo?: string
+  tipo?: string,
+  incluirOcultos: boolean = false
 ): Promise<{ data: Produto[] | null; error: any }> {
   let query = supabase.from('produtos').select('*, categorias(nome)');
 
@@ -29,6 +31,10 @@ export async function listarProdutos(
     query = query.eq('categorias.nome', categoria);
   }
   // tipo_cosmetico not present in current table schema
+
+  if (!incluirOcultos) {
+    query = query.or('oculto.is.null,oculto.eq.false');
+  }
 
   const { data, error } = await query;
   return { data, error };
