@@ -35,7 +35,29 @@ export default function ProdutoDetalhe() {
   }, [id]);
 
   if (!produto) {
-    return <p className="text-center mt-20 text-zinc-900">Carregando produto...</p>;
+    return (
+      <div className="min-h-screen bg-[#e3eef9] text-[#1f2f4a]">
+        <section className="max-w-6xl mx-auto px-6 pt-24 pb-14">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="bg-white/70 border border-[#c9d9f2] rounded-3xl p-8 shadow-xl space-y-4">
+              <div className="h-3 w-24 rounded skeleton" />
+              <div className="h-10 w-3/4 rounded skeleton" />
+              <div className="h-4 w-full rounded skeleton" />
+              <div className="h-4 w-5/6 rounded skeleton" />
+              <div className="h-12 w-48 rounded-full skeleton" />
+            </div>
+            <div className="bg-[#a9c3e6] rounded-3xl p-8 shadow-2xl">
+              <div className="h-[360px] rounded-2xl skeleton" />
+              <div className="mt-6 flex gap-3">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="w-16 h-16 rounded-xl skeleton" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
   }
 
   const maskedLink = (() => {
@@ -56,7 +78,7 @@ export default function ProdutoDetalhe() {
   return (
     <div className="min-h-screen bg-[#e3eef9] text-[#1f2f4a]">
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-24 pb-14">
+      <section className="max-w-6xl mx-auto px-6 pt-24 pb-14 animate-fadeUp">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="bg-white/70 border border-[#c9d9f2] rounded-3xl p-8 shadow-xl">
             <span className="text-xs tracking-widest uppercase text-[#4f6b9b]">IMBALÁVEL</span>
@@ -121,7 +143,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* SOCIAL PROOF (LOGOS) */}
-      <section className="py-10 bg-white/70 border-y border-[#c9d9f2]">
+      <section className="py-10 bg-white/70 border-y border-[#c9d9f2] animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-center text-[#56719a] text-sm mb-6">
             Recomendado por publicações e marcas parceiras
@@ -137,7 +159,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* MAIS VENDIDOS */}
-      <section className="py-14">
+      <section className="py-14 animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center">Mais Vendidos</h2>
           <p className="text-center text-[#56719a] mt-2">Top escolhas da curadoria</p>
@@ -148,7 +170,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* CATEGORIAS */}
-      <section className="py-14 bg-white/70 border-y border-[#c9d9f2]">
+      <section className="py-14 bg-white/70 border-y border-[#c9d9f2] animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center">Categorias</h2>
           <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -163,7 +185,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* DESCRIÇÃO */}
-      <section className="py-14">
+      <section className="py-14 animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center">Descrição do Produto</h2>
           <div className="mt-8 bg-white rounded-2xl p-8 border border-[#dbe6f7] shadow-lg">
@@ -175,7 +197,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* BRAND BENEFITS */}
-      <section className="py-14 bg-white/70 border-y border-[#c9d9f2]">
+      <section className="py-14 bg-white/70 border-y border-[#c9d9f2] animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <div className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
             <img src={imagemAtiva!} alt={produto.nome} className="w-full h-60 object-cover rounded-xl" />
@@ -199,7 +221,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* QUEM COMPROU DIZ */}
-      <section className="py-14">
+      <section className="py-14 animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center">Quem comprou diz</h2>
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -218,7 +240,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* ABOUT */}
-      <section className="py-14 bg-white/70 border-y border-[#c9d9f2]">
+      <section className="py-14 bg-white/70 border-y border-[#c9d9f2] animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <div>
             <h2 className="text-3xl font-semibold">Sobre a marca</h2>
@@ -241,7 +263,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* FAQ */}
-      <section className="py-14">
+      <section className="py-14 animate-fadeUp">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center">Perguntas frequentes</h2>
           <div className="mt-8 space-y-4">
@@ -260,7 +282,7 @@ export default function ProdutoDetalhe() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="py-14 bg-[#a9c3e6]">
+      <section className="py-14 bg-[#a9c3e6] animate-fadeUp">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-semibold">Escolha sua próxima assinatura</h2>
           <p className="text-[#3f5b86] mt-3">Finalize agora e receba em casa com total segurança.</p>

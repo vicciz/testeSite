@@ -62,6 +62,27 @@
   animation: pulseGlowBlue 2.6s infinite ease-in-out;
 }
 
+/* ⏳ Loading skeleton & fade-in */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 37%, #eef2f7 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite linear;
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 0.6s ease-out both;
+}
+
 /* 🧴 Estilo global */
 body {
   color-scheme: light;
