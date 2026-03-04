@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 
 interface User {
   nome: string;
-  role: 'admin' | 'user';
+  role?: 'admin' | 'user' | string;
+  email?: string;
 }
 
 export default function Header() {
@@ -16,6 +17,7 @@ export default function Header() {
   const [hasProdutoHero, setHasProdutoHero] = useState(false);
   const pathname = usePathname();
   const isProdutoPage = pathname?.startsWith('/produto');
+  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map((value) => value.trim().toLowerCase()).filter(Boolean);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -26,7 +28,13 @@ export default function Header() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser) as User;
+      const normalizedEmail = parsedUser.email?.toLowerCase();
+      const rawRole = parsedUser.role?.toString().toLowerCase();
+      const normalizedRole = rawRole === 'admin' || rawRole === 'sim' || (normalizedEmail && adminEmails.includes(normalizedEmail)) ? 'admin' : 'user';
+      const normalizedUser = { ...parsedUser, role: normalizedRole };
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
+      setUser(normalizedUser);
     }
   }, []);
 

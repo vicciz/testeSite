@@ -8,6 +8,7 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map((value) => value.trim().toLowerCase()).filter(Boolean);
 
 const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -50,11 +51,11 @@ const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { data: profile } = await supabase
       .from("clientes")
       .select("id,nome,email,role")
-      .eq("email", normalizedEmail)
+      .ilike("email", normalizedEmail)
       .single();
 
-    const rawRole = profile?.role?.toString().toLowerCase();
-    const normalizedRole = rawRole === "admin" || rawRole === "sim" ? "admin" : "user";
+    const rawRole = profile?.role?.toString().toLowerCase() || authData.user.user_metadata?.role?.toString().toLowerCase();
+    const normalizedRole = rawRole === "admin" || rawRole === "sim" || adminEmails.includes(normalizedEmail) ? "admin" : "user";
 
     localStorage.setItem("user", JSON.stringify({
       id: profile?.id || authData.user.id,
