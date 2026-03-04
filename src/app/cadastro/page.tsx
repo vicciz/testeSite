@@ -47,14 +47,14 @@ export default function Cadastro() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 text-white shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-md border border-black/10 rounded-2xl p-8 text-zinc-900 shadow-xl">
 
         <h1 className="text-3xl font-bold text-center mb-2">
           Criar conta
         </h1>
 
-        <p className="text-center text-gray-400 mb-8">
+        <p className="text-center text-zinc-600 mb-8">
           Preencha os dados para continuar
         </p>
 
@@ -62,7 +62,7 @@ export default function Cadastro() {
 
           {/* Nome */}
           <div>
-            <label className="block text-sm mb-1 text-gray-300">
+            <label className="block text-sm mb-1 text-zinc-600">
               Nome
             </label>
             <input
@@ -70,14 +70,14 @@ export default function Cadastro() {
               value={nome}
               onChange={e => setNome(e.target.value)}
               placeholder="Seu nome"
-              className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/10 
+              className="w-full px-4 py-3 rounded-lg bg-white border border-black/10 
                          focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm mb-1 text-gray-300">
+            <label className="block text-sm mb-1 text-zinc-600">
               Email
             </label>
             <input
@@ -85,14 +85,14 @@ export default function Cadastro() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/10 
+              className="w-full px-4 py-3 rounded-lg bg-white border border-black/10 
                          focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           {/* Senha */}
           <div>
-            <label className="block text-sm mb-1 text-gray-300">
+            <label className="block text-sm mb-1 text-zinc-600">
               Senha
             </label>
             <input
@@ -100,7 +100,7 @@ export default function Cadastro() {
               value={senha}
               onChange={e => setSenha(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/10 
+              className="w-full px-4 py-3 rounded-lg bg-white border border-black/10 
                          focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -115,9 +115,9 @@ export default function Cadastro() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-400 mt-6">
+        <p className="text-center text-sm text-zinc-600 mt-6">
           Já tem uma conta?{" "}
-          <a href="/login" className="text-indigo-400 hover:underline">
+          <a href="/login" className="text-indigo-600 hover:underline">
             Entrar
           </a>
         </p>

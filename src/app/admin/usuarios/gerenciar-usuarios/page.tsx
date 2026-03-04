@@ -78,13 +78,13 @@ export default function CatalogoAdmin() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white px-6 py-10">
+    <main className="min-h-screen bg-slate-50 text-zinc-900 px-6 py-10">
       <div className="max-w-7xl mx-auto">
 
         {/* Título */}
         <header className="mb-10">
           <h1 className="text-3xl font-bold">Gerenciar Usuários</h1>
-          <p className="text-zinc-400 mt-1">
+          <p className="text-zinc-600 mt-1">
             Busque, selecione e envie comunicações
           </p>
         </header>
@@ -93,17 +93,17 @@ export default function CatalogoAdmin() {
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* Coluna esquerda */}
-          <aside className="bg-zinc-900/70 rounded-2xl p-6 space-y-6 border border-white/10">
+          <aside className="bg-white rounded-2xl p-6 space-y-6 border border-black/10 shadow-sm">
             
             <div>
-              <label className="text-sm text-zinc-400">
+              <label className="text-sm text-zinc-600">
                 Buscar usuários
               </label>
               <input
                 value={termo}
                 onChange={(e) => setTermo(e.target.value)}
                 placeholder="Digite o nome ou letra..."
-                className="mt-2 w-full bg-zinc-950 border border-white/10
+                className="mt-2 w-full bg-slate-50 border border-black/10
                            rounded-xl px-4 py-3 text-sm
                            placeholder:text-zinc-500
                            focus:outline-none focus:ring-2 focus:ring-pink-600"
@@ -111,7 +111,7 @@ export default function CatalogoAdmin() {
             </div>
 
             <div>
-              <p className="text-sm text-zinc-400 mb-2">
+              <p className="text-sm text-zinc-600 mb-2">
                 Ações em massa
               </p>
 
@@ -120,40 +120,40 @@ export default function CatalogoAdmin() {
               />
             </div>
 
-            <div className="text-sm text-zinc-400">
+            <div className="text-sm text-zinc-600">
               Selecionados:{" "}
-              <span className="text-white font-semibold">
+              <span className="text-zinc-900 font-semibold">
                 {selecionados.length}
               </span>
             </div>
 
-            <div className="pt-4 border-t border-white/10 space-y-3">
-              <p className="text-sm text-zinc-400">
+            <div className="pt-4 border-t border-black/10 space-y-3">
+              <p className="text-sm text-zinc-600">
                 {editingId ? 'Editar usuário' : 'Cadastrar usuário'}
               </p>
               <input
                 value={form.nome}
                 onChange={(e) => setForm({ ...form, nome: e.target.value })}
                 placeholder="Nome"
-                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+                className="w-full bg-slate-50 border border-black/10 rounded-xl px-4 py-2 text-sm"
               />
               <input
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="Email"
-                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+                className="w-full bg-slate-50 border border-black/10 rounded-xl px-4 py-2 text-sm"
               />
               <input
                 type="password"
                 value={form.senha}
                 onChange={(e) => setForm({ ...form, senha: e.target.value })}
                 placeholder="Senha"
-                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+                className="w-full bg-slate-50 border border-black/10 rounded-xl px-4 py-2 text-sm"
               />
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-2 text-sm"
+                className="w-full bg-slate-50 border border-black/10 rounded-xl px-4 py-2 text-sm"
               >
                 <option value="user">user</option>
                 <option value="admin">admin</option>
@@ -171,7 +171,7 @@ export default function CatalogoAdmin() {
                       setEditingId(null);
                       setForm({ nome: '', email: '', senha: '', role: 'user' });
                     }}
-                    className="bg-zinc-800 text-white px-4 py-2 rounded text-sm"
+                    className="bg-slate-200 text-zinc-900 px-4 py-2 rounded text-sm"
                   >
                     Cancelar
                   </button>
@@ -181,7 +181,7 @@ export default function CatalogoAdmin() {
           </aside>
 
           {/* Coluna direita */}
-          <div className="lg:col-span-2 bg-zinc-900/60 rounded-2xl p-6 border border-white/10">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-black/10 shadow-sm">
             <SelectUsuarios
               usuarios={usuarios}
               selecionados={selecionados}

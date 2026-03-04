@@ -64,7 +64,7 @@ export default function SelectUsuarios({
                 <button
                   type="button"
                   onClick={() => onEdit(u)}
-                  className="text-indigo-400 text-sm"
+                  className="text-indigo-600 text-sm"
                 >
                   Editar
                 </button>
@@ -73,7 +73,7 @@ export default function SelectUsuarios({
                 <button
                   type="button"
                   onClick={() => onDelete(u.id)}
-                  className="text-red-400 text-sm"
+                  className="text-red-500 text-sm"
                 >
                   Excluir
                 </button>

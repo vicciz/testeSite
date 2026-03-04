@@ -145,7 +145,7 @@ export default function EditarProduto() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-10 text-white space-y-4 flex flex-col max-w-xl mx-auto"
+      className="p-10 text-zinc-900 space-y-4 flex flex-col max-w-xl mx-auto"
     >
       <input
         name="nome"
@@ -153,7 +153,7 @@ export default function EditarProduto() {
         value={form.nome}
         onChange={handleChange}
         required
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <input
@@ -162,7 +162,7 @@ export default function EditarProduto() {
         value={form.fornecedor}
         onChange={handleChange}
         required
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <input
@@ -171,7 +171,7 @@ export default function EditarProduto() {
         value={form.preco}
         onChange={handleChange}
         required
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <input
@@ -179,7 +179,7 @@ export default function EditarProduto() {
         placeholder="Avaliação (0-5)"
         value={form.rating}
         onChange={handleChange}
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <input
@@ -187,7 +187,7 @@ export default function EditarProduto() {
         placeholder="Qtd avaliações"
         value={form.reviews}
         onChange={handleChange}
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <input
@@ -195,14 +195,14 @@ export default function EditarProduto() {
         placeholder="Link do produto"
         value={form.link}
         onChange={handleChange}
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <select
         name="categoria_id"
         value={form.categoria_id}
         onChange={handleChange}
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       >
         <option value="">Selecione a categoria</option>
         {categorias.map((c) => (
@@ -217,7 +217,7 @@ export default function EditarProduto() {
         placeholder="Descrição"
         value={form.descricao}
         onChange={handleChange}
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <textarea
@@ -225,7 +225,7 @@ export default function EditarProduto() {
         placeholder="Detalhes"
         value={form.detalhes}
         onChange={handleChange}
-        className="p-2 rounded bg-gray-800"
+        className="p-2 rounded bg-slate-100 border border-black/10"
       />
 
       <label>Imagem Principal</label>

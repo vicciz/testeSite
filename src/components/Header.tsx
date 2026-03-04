@@ -20,8 +20,8 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between text-white">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur border-b border-black/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between text-zinc-900">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold">
           IMBALÁVEL
@@ -53,28 +53,24 @@ export default function Header() {
                 Criar conta
               </Link>
             </>
-          ) : (
-            <Link href="/perfil" className="px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600">
-              Perfil
-            </Link>
-          )}
+          ) : null}
         </nav>
 
         {/* Mobile menu button */}
         <button
-          className="md:hidden p-2 rounded border border-white/20"
+          className="md:hidden p-2 rounded border border-black/20"
           aria-label="Abrir menu"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <span className="block w-5 h-0.5 bg-white mb-1" />
-          <span className="block w-5 h-0.5 bg-white mb-1" />
-          <span className="block w-5 h-0.5 bg-white" />
+          <span className="block w-5 h-0.5 bg-zinc-900 mb-1" />
+          <span className="block w-5 h-0.5 bg-zinc-900 mb-1" />
+          <span className="block w-5 h-0.5 bg-zinc-900" />
         </button>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden px-4 sm:px-6 pb-4 text-white border-t border-white/10">
+        <div className="md:hidden px-4 sm:px-6 pb-4 text-zinc-900 border-t border-black/10">
           <div className="flex flex-col gap-3 pt-3">
             <Link href="/inicio" className="text-base font-medium hover:underline" onClick={() => setMenuOpen(false)}>
               Produtos
@@ -97,11 +93,7 @@ export default function Header() {
                     Criar conta
                   </Link>
                 </>
-              ) : (
-                <Link href="/perfil" className="px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600" onClick={() => setMenuOpen(false)}>
-                  Perfil
-                </Link>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

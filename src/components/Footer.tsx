@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-black/80 backdrop-blur border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-3 gap-10 text-zinc-300">
+    <footer className="w-full bg-white/90 backdrop-blur border-t border-black/10">
+      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-3 gap-10 text-zinc-700">
 
         {/* BRAND */}
         <div>
-          <h2 className="text-2xl font-extrabold tracking-widest text-white">
+          <h2 className="text-2xl font-extrabold tracking-widest text-zinc-900">
             IMBALÁVEL
           </h2>
 
@@ -23,23 +23,23 @@ export default function Footer() {
 
         {/* LINKS */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
+          <h3 className="text-lg font-semibold text-zinc-900 mb-4">
             Institucional
           </h3>
 
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="/sobre-nos" className="hover:text-white transition">
+              <Link href="/sobre-nos" className="hover:text-zinc-900 transition">
                 Sobre nós
               </Link>
             </li>
             <li>
-              <Link href="/termos" className="hover:text-white transition">
+              <Link href="/termos" className="hover:text-zinc-900 transition">
                 Termos de Uso
               </Link>
             </li>
             <li>
-              <Link href="/privacidade" className="hover:text-white transition">
+              <Link href="/privacidade" className="hover:text-zinc-900 transition">
                 Política de Privacidade
               </Link>
             </li>
@@ -49,7 +49,7 @@ export default function Footer() {
 
         {/* SOCIAL + SEO */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
+          <h3 className="text-lg font-semibold text-zinc-900 mb-4">
             Conecte-se
           </h3>
 
@@ -90,7 +90,7 @@ export default function Footer() {
       </div>
 
       {/* BOTTOM BAR */}
-      <div className="border-t border-white/5 py-4 text-center text-xs text-zinc-500">
+      <div className="border-t border-black/10 py-4 text-center text-xs text-zinc-500">
         Perfumes masculinos • Fragrâncias premium • Curadoria IMBALÁVEL
       </div>
     </footer>

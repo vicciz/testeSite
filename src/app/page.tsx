@@ -40,7 +40,7 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white relative">
+    <main className="min-h-screen bg-slate-50 text-zinc-900 relative">
       {/* Fundo Mesh Gradient Animado */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600 opacity-15 blur-3xl rounded-full animate-pulse"></div>
@@ -62,32 +62,32 @@ export default function Page() {
 
       {/* HERO */}
       <section className="relative z-10 w-full h-[75vh] flex items-center justify-center text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-white/80 backdrop-blur-sm" />
 
         <div className="relative z-10 px-6 max-w-4xl">
-          <span className="inline-block mb-6 px-4 py-1 rounded-full border border-white/20 text-sm tracking-widest">
+          <span className="inline-block mb-6 px-4 py-1 rounded-full border border-black/20 text-sm tracking-widest text-zinc-700">
             IMBALÁVEL
           </span>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-wide leading-tight bg-gradient-to-r from-white via-rose-100 to-pink-100 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-wide leading-tight bg-gradient-to-r from-zinc-900 via-zinc-700 to-amber-700 bg-clip-text text-transparent">
             Beleza não se explica.<br />Se impõe.
           </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-zinc-300">
+          <p className="mt-6 text-lg md:text-xl text-zinc-600">
             Os melhores perfumes masculinos, cosméticos premium e fragrâncias marcantes disponíveis na web.
           </p>
 
           <div className="mt-10 flex justify-center gap-4 flex-wrap">
             <a
               href="#destaques"
-              className="px-8 py-3 rounded-full bg-pink-600 hover:bg-pink-500 transition font-semibold"
+              className="px-8 py-3 rounded-full bg-pink-600 hover:bg-pink-500 text-white transition font-semibold"
             >
               Ver Destaques
             </a>
 
             <a
               href="#categorias"
-              className="px-8 py-3 rounded-full border border-white/20 hover:bg-white/10 transition"
+              className="px-8 py-3 rounded-full border border-black/20 hover:bg-black/5 transition"
             >
               Explorar Coleção
             </a>
@@ -107,10 +107,10 @@ export default function Page() {
         ].map((c, i) => (
           <div
             key={i}
-            className="bg-zinc-900/60 backdrop-blur rounded-2xl p-10 text-center hover:scale-[1.03] transition"
+            className="bg-white/80 border border-black/5 backdrop-blur rounded-2xl p-10 text-center hover:scale-[1.03] transition"
           >
             <h3 className="text-2xl font-semibold mb-4">{c.title}</h3>
-            <p className="text-zinc-400">{c.desc}</p>
+            <p className="text-zinc-600">{c.desc}</p>
           </div>
         ))}
       </section>
@@ -125,7 +125,7 @@ export default function Page() {
             Destaques IMBALÁVEL
           </h2>
 
-          <p className="text-zinc-400 mt-4">
+          <p className="text-zinc-600 mt-4">
             Perfumes masculinos mais buscados e bem avaliados
           </p>
         </div>
@@ -137,8 +137,8 @@ export default function Page() {
       </section>
 
       {/* SEO CONTENT */}
-      <section className="max-w-5xl mx-auto px-6 pb-24 text-zinc-300 leading-relaxed">
-        <h2 className="text-3xl font-bold text-white mb-6">
+      <section className="max-w-5xl mx-auto px-6 pb-24 text-zinc-700 leading-relaxed">
+        <h2 className="text-3xl font-bold text-zinc-900 mb-6">
           Os Melhores Perfumes Masculinos Disponíveis Online
         </h2>
 
@@ -153,7 +153,7 @@ export default function Page() {
           Cada produto é selecionado para homens que buscam presença, elegância e identidade.
         </p>
 
-        <h3 className="text-2xl font-semibold text-white mb-4">
+        <h3 className="text-2xl font-semibold text-zinc-900 mb-4">
           Por que escolher perfumes através da IMBALÁVEL?
         </h3>
 
@@ -171,7 +171,7 @@ export default function Page() {
       </section>
 
       {/* BENEFÍCIOS */}
-      <section className="bg-black/40 py-20">
+      <section className="bg-slate-100 py-20">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
           {[
             { title: 'Entrega Rápida', desc: 'Envios para todo o Brasil' },
@@ -180,7 +180,7 @@ export default function Page() {
           ].map((b, i) => (
             <div key={i}>
               <h4 className="text-xl font-semibold mb-2">{b.title}</h4>
-              <p className="text-zinc-400">{b.desc}</p>
+              <p className="text-zinc-600">{b.desc}</p>
             </div>
           ))}
         </div>

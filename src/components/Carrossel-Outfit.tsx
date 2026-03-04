@@ -8,6 +8,7 @@ import { supabase } from '../../supabaseClient';
 export default function CarrosselProdutos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState<Produto[]>([]);
+  const [mostrarTodos, setMostrarTodos] = useState(false);
 
   // fetch products from Supabase instead of PHP API
   useEffect(() => {
@@ -36,6 +37,8 @@ export default function CarrosselProdutos() {
     setProdutosFiltrados(data || []);
   };
 
+  const produtosVisiveis = mostrarTodos ? produtosFiltrados : produtosFiltrados.slice(0, 3);
+
   return (
     <div className=" relative z-10 px-6 max-w-7xl mx-auto">
       {/* Componente de filtro */}
@@ -47,8 +50,8 @@ export default function CarrosselProdutos() {
 
       {/* Desktop / Tablet */}
       <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {produtosFiltrados.length > 0 ? (
-          produtosFiltrados.map((p) => {
+        {produtosVisiveis.length > 0 ? (
+          produtosVisiveis.map((p) => {
             const imageUrl = p.image
               ? supabase.storage.from('produtos').getPublicUrl(p.image).data.publicUrl
               : '/placeholder.png';
@@ -57,8 +60,8 @@ export default function CarrosselProdutos() {
               <Link
                 key={p.id}
                 href={`/produto?id=${p.id}`}
-                className="bg-gradient-to-b from-zinc-900 to-black
-                           rounded-2xl shadow-lg p-4 text-white
+                className="bg-white border border-slate-200
+                           rounded-2xl shadow-lg p-4 text-slate-900
                            hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
               >
                 <img
@@ -67,7 +70,7 @@ export default function CarrosselProdutos() {
                   className="w-full h-44 object-cover rounded-xl mb-3"
                 />
                 <h3 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h3>
-                <span className="text-green-500 font-bold text-lg">R$ {p.preco}</span>
+                
               </Link>
             );
           })
@@ -80,8 +83,8 @@ export default function CarrosselProdutos() {
 
       {/* Mobile */}
       <div className="md:hidden flex gap-4 overflow-x-auto no-scrollbar py-4">
-        {produtosFiltrados.length > 0 ? (
-          produtosFiltrados.map((p) => {
+        {produtosVisiveis.length > 0 ? (
+          produtosVisiveis.map((p) => {
             const imageUrl = p.image
               ? supabase.storage.from('produtos').getPublicUrl(p.image).data.publicUrl
               : '/placeholder.png';
@@ -90,8 +93,8 @@ export default function CarrosselProdutos() {
               <Link
                 key={p.id}
                 href={`/produto?id=${p.id}`}
-                className="min-w-[260px] bg-gradient-to-b from-zinc-900 to-black
-                           rounded-2xl shadow-lg p-4 text-white"
+                className="min-w-[260px] bg-white border border-slate-200
+                           rounded-2xl shadow-lg p-4 text-slate-900"
               >
                 <img
                   src={imageUrl}
@@ -99,7 +102,7 @@ export default function CarrosselProdutos() {
                   className="w-full h-40 object-cover rounded-xl mb-3"
                 />
                 <h3 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h3>
-                <span className="text-green-500 font-bold text-lg">R$ {p.preco}</span>
+                
               </Link>
             );
           })
@@ -107,6 +110,17 @@ export default function CarrosselProdutos() {
           <p className="text-center text-zinc-400 w-full">Nenhum produto encontrado.</p>
         )}
       </div>
+
+      {produtosFiltrados.length > 3 && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => setMostrarTodos(!mostrarTodos)}
+            className="px-6 py-2 rounded-full bg-[#2f61b9] text-white font-semibold shadow-lg shadow-blue-600/30 hover:bg-[#244e96] transition"
+          >
+            {mostrarTodos ? 'Ver menos' : 'Ver mais'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

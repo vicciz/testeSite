@@ -50,7 +50,7 @@ export default function CatalogoAdmin() {
   if (!user || user.role !== "admin") return <p className="p-10">Acesso negado</p>;
 
   return (
-    <div className="p-10 text-white">
+    <div className="p-10 text-zinc-900">
 
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
         <h1 className="text-2xl">Catálogo de Produtos</h1>
@@ -58,7 +58,7 @@ export default function CatalogoAdmin() {
         <div className="flex gap-4 flex-wrap">
           <Link
             href="/admin/produtos/cadastrar"
-            className="bg-indigo-500 px-4 py-2 rounded"
+            className="bg-indigo-600 text-white px-4 py-2 rounded"
           >
             + Novo Produto
           </Link>
@@ -66,17 +66,16 @@ export default function CatalogoAdmin() {
           <input
             type="text"
             placeholder="Buscar produto..."
-            className="bg-black/40 border border-white/10 rounded px-4 py-2 text-white"
+            className="bg-white border border-black/10 rounded px-4 py-2 text-zinc-900"
           />
         </div>
       </div>
 
-      <table className="w-full bg-black/40 rounded overflow-hidden">
+      <table className="w-full bg-white rounded overflow-hidden border border-black/10">
         <thead>
-          <tr className="text-left border-b border-white/10">
+          <tr className="text-left border-b border-black/10">
             <th className="p-2">Imagem</th>
             <th>Nome</th>
-            <th>Preço</th>
             <th>Categoria</th>
             <th>Ações</th>
           </tr>
@@ -84,7 +83,7 @@ export default function CatalogoAdmin() {
 
         <tbody>
           {produtos.map(p => (
-            <tr key={p.id} className="border-b border-white/5">
+            <tr key={p.id} className="border-b border-black/5">
 
               <td className="p-2">
                 
@@ -95,26 +94,25 @@ export default function CatalogoAdmin() {
                     className="w-20 h-20 object-cover rounded"
                   />
                 ) : (
-                  <div className="w-20 h-20 bg-gray-700 flex items-center justify-center rounded text-sm">
+                  <div className="w-20 h-20 bg-slate-100 border border-black/10 flex items-center justify-center rounded text-sm">
                     Sem imagem
                   </div>
                 )}
               </td>
 
               <td>{p.nome}</td>
-              <td>R$ {p.preco}</td>
               <td>{p.categorias?.nome ?? p.categoria_id ?? '-'}</td>
 
               <td className="flex gap-3">
                 <Link
                   href={`/admin/produtos/editar/${p.id}`}
-                  className="text-indigo-400"
+                  className="text-indigo-600"
                 >
                   Editar
                 </Link>
 
                 <button
-                  className="text-red-400"
+                  className="text-red-500"
                   onClick={() => handleExcluir(p.id)}
                 >
                   Excluir

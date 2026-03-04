@@ -48,12 +48,12 @@ export default function NewsletterPopup() {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-zinc-900 text-white p-8 rounded-2xl w-full max-w-md relative shadow-2xl">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div className="bg-white text-zinc-900 p-8 rounded-2xl w-full max-w-md relative shadow-2xl">
 
         <button
           onClick={fecharPopup}
-          className="absolute top-3 right-4 text-gray-400 hover:text-white text-xl"
+          className="absolute top-3 right-4 text-zinc-500 hover:text-zinc-900 text-xl"
         >
           ×
         </button>
@@ -62,7 +62,7 @@ export default function NewsletterPopup() {
           🎁 receba novidades!
         </h2>
 
-        <p className="text-gray-400 mb-6">
+        <p className="text-zinc-600 mb-6">
           Cadastre seu email e receba ofertas exclusivas.
         </p>
 
@@ -72,12 +72,12 @@ export default function NewsletterPopup() {
             type="email"
             required
             placeholder="Digite seu melhor email"
-            className="w-full p-3 rounded-lg bg-zinc-800 outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-3 rounded-lg bg-zinc-100 outline-none focus:ring-2 focus:ring-indigo-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
+          <div className="flex items-center space-x-2 text-sm text-zinc-600">
             <input
               type="checkbox"
               checked={naoMostrar}

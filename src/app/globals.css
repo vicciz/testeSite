@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
-/* 🎨 Paleta premium (perfume store) */
+/* 🎨 Paleta premium (light) */
 :root {
-  --background: #0b0b0d;        /* preto profundo */
-  --foreground: #f5f5f7;        /* branco չափ Apple-like */
-  --accent-gold: #d4af37;       /* dourado elegante */
-  --accent-soft: #b89b5e;
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --border-soft: rgba(255, 255, 255, 0.08);
+  --background: #f8fafc;        /* slate-50 */
+  --foreground: #0f172a;        /* slate-900 */
+  --muted: #475569;             /* slate-600 */
+  --surface: #ffffff;
+  --border: #e2e8f0;            /* slate-200 */
+  --primary: #4f46e5;           /* indigo-600 */
+  --secondary: #e11d48;         /* rose-600 */
+  --accent-gold: #f59e0b;       /* amber-500 */
+  --accent-soft: #fcd34d;       /* amber-300 */
+  --card-bg: rgba(255, 255, 255, 0.96);
+  --border-soft: rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow-strong: 0 20px 60px rgba(15, 23, 42, 0.12);
 }
 
 /* Integra com Tailwind Theme */
@@ -19,13 +26,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* 🌙 Dark premium */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b0b0d;
-    --foreground: #f5f5f7;
-  }
-}
+/* Tema claro fixo em todas as páginas */
 
 /* ✨ Glow refinado (menos chamativo, mais luxo) */
 @keyframes pulseGlow {
@@ -44,12 +45,30 @@
   animation: pulseGlow 2.8s infinite ease-in-out;
 }
 
+/* 💙 CTA azul com glow */
+@keyframes pulseGlowBlue {
+  0% {
+    box-shadow: 0 0 0px rgba(47, 97, 185, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 26px rgba(47, 97, 185, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(47, 97, 185, 0.2);
+  }
+}
+
+.animate-pulseGlowBlue {
+  animation: pulseGlowBlue 2.6s infinite ease-in-out;
+}
+
 /* 🧴 Estilo global */
 body {
+  color-scheme: light;
   background: radial-gradient(
     circle at top,
-    #141418 0%,
-    #0b0b0d 60%
+    #ffffff 0%,
+    #f1f5f9 60%
   );
   color: var(--foreground);
   font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
@@ -60,25 +79,26 @@ body {
 .card-perfume {
   background: var(--card-bg);
   border: 1px solid var(--border-soft);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(10px);
   border-radius: 1.25rem;
   transition: all 0.4s ease;
+  box-shadow: var(--shadow-soft);
 }
 
 .card-perfume:hover {
   transform: translateY(-6px);
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  border-color: rgba(79, 70, 229, 0.25);
+  box-shadow: var(--shadow-strong);
 }
 
 /* 🟡 Botão premium */
 .btn-gold {
   background: linear-gradient(
     135deg,
-    #d4af37,
-    #f2d57c
+    #f59e0b,
+    #fcd34d
   );
-  color: #0b0b0d;
+  color: #1a1405;
   font-weight: 700;
   letter-spacing: 0.8px;
   border-radius: 999px;
@@ -87,13 +107,25 @@ body {
 
 .btn-gold:hover {
   transform: scale(1.06);
-  filter: brightness(1.1);
-  box-shadow: 0 20px 40px rgba(212, 175, 55, 0.45);
+  filter: brightness(1.04);
+  box-shadow: 0 18px 36px rgba(245, 158, 11, 0.28);
 }
 
 /* 🕯️ Texto sofisticado */
 .text-muted {
-  color: rgba(245, 245, 247, 0.6);
+  color: var(--muted);
+}
+
+/* Utilitários de superfície */
+.surface-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  border-radius: 1.25rem;
+}
+
+.shadow-strong {
+  box-shadow: var(--shadow-strong);
 }
 
 /* ✨ Linha dourada decorativa */

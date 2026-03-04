@@ -73,29 +73,29 @@ export default function CadastrarProduto() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+    <div className="min-h-screen bg-slate-50 text-zinc-900 flex items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md space-y-4 p-6 bg-zinc-900 rounded-xl"
+        className="w-full max-w-md space-y-4 p-6 bg-white border border-black/10 rounded-xl shadow-lg"
       >
         <h1 className="text-xl font-bold">Cadastrar Produto</h1>
 
         <input
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           placeholder="Nome"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
         />
 
         <input
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           placeholder="Preço"
           value={preco}
           onChange={(e) => setPreco(e.target.value)}
         />
 
         <input
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           placeholder="Link do Produto"
           value={link}
           onChange={(e) => setLink(e.target.value)}
@@ -104,28 +104,28 @@ export default function CadastrarProduto() {
         <input
           type="file"
           accept="image/*"
-          className="w-full p-3 rounded bg-zinc-800 text-white"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           onChange={(e) => {
             if (e.target.files) setImageFile(e.target.files[0]);
           }}
         />
 
         <textarea
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           placeholder="Descrição"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
         />
 
         <textarea
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           placeholder="Detalhes"
           value={detalhes}
           onChange={(e) => setDetalhes(e.target.value)}
         />
 
         <select
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           value={categoriaId}
           onChange={(e) => setCategoriaId(e.target.value)}
         >
@@ -138,7 +138,7 @@ export default function CadastrarProduto() {
         </select>
 
         <input
-          className="w-full p-3 rounded bg-zinc-800"
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
           placeholder="Fornecedor"
           value={fornecedor}
           onChange={(e) => setFornecedor(e.target.value)}

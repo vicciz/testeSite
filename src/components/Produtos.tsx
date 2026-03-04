@@ -55,7 +55,7 @@ const imageUrl = image
       <h3 className="text-md font-bold">{nome}</h3>
       <p className="text-sm text-gray-600 mb-1">{descricao}</p>
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg font-bold text-purple-600">R$ {preco}</span>
+        
       </div>
       <p className="text-sm text-gray-500">⭐ {rating} ({reviews})</p>
 

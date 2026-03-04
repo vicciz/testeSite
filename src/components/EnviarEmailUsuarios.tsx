@@ -104,7 +104,7 @@ export default function EnviarEmailUsuarios({ usuarios }: Props) {
       </button>
 
       {/* Lista de usuários com scroll interno */}
-      <div className="flex-1 border rounded p-3 overflow-auto max-h-full">
+      <div className="flex-1 border border-black/10 rounded p-3 overflow-auto max-h-full">
         {usuarios.map(usuario => (
           <label key={usuario.id} className="flex gap-2 items-center mb-1">
             <input
@@ -140,7 +140,7 @@ export default function EnviarEmailUsuarios({ usuarios }: Props) {
         />
         <button
           onClick={enviarEmails}
-          className="bg-black text-white px-4 py-2 rounded w-60"
+          className="bg-slate-900 text-white px-4 py-2 rounded w-60"
         >
           Enviar para selecionados
         </button>

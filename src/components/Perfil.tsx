@@ -23,8 +23,8 @@ export default function Perfil() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex justify-center items-center p-6">
-      <div className="bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl p-8">
+    <div className="min-h-screen bg-slate-50 text-zinc-900 flex justify-center items-center p-6">
+      <div className="bg-white w-full max-w-md rounded-2xl border border-black/10 shadow-2xl p-8">
 
         {editando ? (
           <>
@@ -36,7 +36,7 @@ export default function Perfil() {
               name="nome"
               value={usuario.nome}
               onChange={handleChange}
-              className="w-full p-3 mb-4 rounded bg-zinc-800"
+              className="w-full p-3 mb-4 rounded bg-slate-100 border border-black/10"
               placeholder="Nome"
             />
 
@@ -44,7 +44,7 @@ export default function Perfil() {
               name="email"
               value={usuario.email}
               onChange={handleChange}
-              className="w-full p-3 mb-6 rounded bg-zinc-800"
+              className="w-full p-3 mb-6 rounded bg-slate-100 border border-black/10"
               placeholder="Email"
             />
 
@@ -61,7 +61,7 @@ export default function Perfil() {
               {usuario.nome}
             </h1>
 
-            <p className="text-gray-400 text-center mt-2">
+            <p className="text-zinc-600 text-center mt-2">
               {usuario.email}
             </p>
 

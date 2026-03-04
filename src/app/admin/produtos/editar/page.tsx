@@ -3,7 +3,7 @@ import EditarProdutoClient from './EditarProdutoClient';
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="text-white p-10">Carregando...</div>}>
+    <Suspense fallback={<div className="text-zinc-900 p-10">Carregando...</div>}>
       <EditarProdutoClient />
     </Suspense>
   );

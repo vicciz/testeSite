@@ -32,8 +32,8 @@ export function FiltroOutfit({ categorias, tipos, onChange }: FiltroProps) {
             onClick={() => handleCategoria(c)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition
               ${categoriaSelecionada === c
-              ? 'bg-green-600 text-white'
-              : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
             aria-pressed={categoriaSelecionada === c ? 'true' : 'false'}
             aria-label={`Filtrar produtos pela categoria ${c}`}
@@ -53,8 +53,8 @@ export function FiltroOutfit({ categorias, tipos, onChange }: FiltroProps) {
             onClick={() => handleTipo(t)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition
               ${tipoSelecionado === t
-              ? 'bg-green-600 text-white'
-              : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
             aria-pressed={tipoSelecionado === t ? 'true' : 'false'}
             aria-label={`Filtrar produtos do tipo ${t}`}

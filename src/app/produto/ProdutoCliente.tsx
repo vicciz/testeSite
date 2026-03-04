@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ComprarButton } from '@/src/components/button';
+import CarrosselCosmeticos from '@/src/components/Carrossel-Cosmeticos';
 import Footer from '@/src/components/Footer';
 import { Cronometro } from '@/src/components/cronometro';
 import { Produto, buscarProduto } from '@/src/services/produtos';
@@ -34,7 +35,7 @@ export default function ProdutoDetalhe() {
   }, [id]);
 
   if (!produto) {
-    return <p className="text-center mt-20 text-white">Carregando produto...</p>;
+    return <p className="text-center mt-20 text-zinc-900">Carregando produto...</p>;
   }
 
   const imagens = [
@@ -43,188 +44,228 @@ export default function ProdutoDetalhe() {
   ].filter(Boolean);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-20 text-white">
+    <div className="min-h-screen bg-[#e3eef9] text-[#1f2f4a]">
       {/* HERO */}
-      <section className="grid md:grid-cols-2 gap-10 items-center">
-        {/* Imagem principal com zoom */}
-        <div className="overflow-hidden rounded-2xl border border-gray-700 group">
-          <img
-            src={imagemAtiva!}
-            alt={produto.nome}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out
-                       group-hover:scale-110 cursor-zoom-in"
-          />
-        </div>
-
-        {/* Infos */}
-        <div className="space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold">{produto.nome}</h1>
-
-          <p className="text-xl text-gray-300">
-            <a
-              href={produto.link}
-              target="_blank"
-              className="underline text-yellow-400 hover:text-yellow-300"
-            >
+      <section className="max-w-6xl mx-auto px-6 pt-24 pb-14">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="bg-white/70 border border-[#c9d9f2] rounded-3xl p-8 shadow-xl">
+            <span className="text-xs tracking-widest uppercase text-[#4f6b9b]">IMBALÁVEL</span>
+            <h1 className="mt-3 text-4xl md:text-5xl font-semibold">
+              {produto.nome}
+            </h1>
+            <p className="mt-3 text-lg text-[#4b6386]">
               {produto.descricao}
-            </a>
-          </p>
+            </p>
 
-          <div className="flex items-center gap-4">
-            <span className="text-yellow-400 font-bold text-lg">
-              ⭐ {produto.rating}
-            </span>
-            <span className="text-gray-400 text-sm">
-              ({produto.reviews} avaliações)
-            </span>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <span className="bg-[#cfe2ff] text-[#1f3a5f] px-3 py-1 rounded-full text-sm font-semibold">
+                ⭐ {produto.rating || '5.0'}
+              </span>
+              <span className="text-sm text-[#56719a]">({produto.reviews || 128} avaliações)</span>
+              <span className="bg-white border border-[#c9d9f2] text-[#2f61b9] px-3 py-1 rounded-full text-xs font-semibold shadow-sm inline-flex items-center gap-1">
+                🛡️ Selo de Garantia
+              </span>
+            </div>
+
+            <div className="mt-6 flex">
+              <ComprarButton
+                productId={produto.id}
+                link={produto.link}
+                className="w-full sm:w-auto px-10 py-4 text-lg font-semibold bg-[#2f61b9] text-white rounded-full shadow-lg shadow-blue-600/30 hover:bg-[#244e96] hover:shadow-blue-700/40 transition animate-pulseGlowBlue"
+              />
+            </div>
+
+            <p className="mt-4 text-sm text-[#56719a]">⚠️ Estoque limitado</p>
           </div>
 
-          <Cronometro />
+          <div className="bg-[#a9c3e6] rounded-3xl p-8 shadow-2xl">
+            <div className="overflow-hidden rounded-2xl">
+              <img
+                src={imagemAtiva!}
+                alt={produto.nome}
+                className="w-full h-[360px] object-cover"
+              />
+            </div>
+            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+              {imagens.map((img, i) => {
+                const url = supabase.storage.from('produtos').getPublicUrl(img).data.publicUrl;
 
-          <ComprarButton
-            productId={produto.id}
-            link={produto.link}
-            className="w-full py-6 text-2xl font-bold mg-auto block text-center"
-          />
-
-          <p className="text-gray-400">⚠️ Estoque limitado</p>
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setImagemAtiva(url)}
+                    className="w-16 h-16 rounded-xl overflow-hidden border border-[#c9d9f2] bg-white/80 hover:scale-105 transition"
+                  >
+                    <img
+                      src={url}
+                      alt={`${produto.nome} ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* GALERIA COM ZOOM */}
-      <section>
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Detalhes do Produto
-        </h2>
+      {/* SOCIAL PROOF (LOGOS) */}
+      <section className="py-10 bg-white/70 border-y border-[#c9d9f2]">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="text-center text-[#56719a] text-sm mb-6">
+            Recomendado por publicações e marcas parceiras
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 items-center text-center text-[#6b84ab] text-sm">
+            <div>GQ</div>
+            <div>Esquire</div>
+            <div>Men’s Health</div>
+            <div>Elle</div>
+            <div>Forbes</div>
+          </div>
+        </div>
+      </section>
 
-        <div className="flex justify-center gap-4 flex-wrap">
-          {imagens.map((img, i) => {
-            const url = supabase.storage.from('produtos').getPublicUrl(img).data.publicUrl;
+      {/* MAIS VENDIDOS */}
+      <section className="py-14">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-semibold text-center">Mais Vendidos</h2>
+          <p className="text-center text-[#56719a] mt-2">Top escolhas da curadoria</p>
+          <div className="mt-8">
+            <CarrosselCosmeticos />
+          </div>
+        </div>
+      </section>
 
-            return (
-              <div
-                key={i}
-                onClick={() => setImagemAtiva(url)}
-                className="w-24 h-24 md:w-28 md:h-28 rounded-lg overflow-hidden
-                           border border-gray-700 cursor-pointer
-                           transform transition-all duration-500
-                           hover:scale-110 hover:border-yellow-400"
-              >
-                <img
-                  src={url}
-                  alt={`${produto.nome} ${i + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-700
-                             hover:scale-125"
-                />
+      {/* CATEGORIAS */}
+      <section className="py-14 bg-white/70 border-y border-[#c9d9f2]">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-semibold text-center">Categorias</h2>
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {['Perfumes', 'Skincare', 'Outfit', 'Acessórios'].map((c) => (
+              <div key={c} className="bg-white rounded-2xl p-6 border border-[#dbe6f7] text-center shadow-lg">
+                <div className="text-2xl mb-2">★</div>
+                <p className="font-semibold">{c}</p>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-
-        <p className="text-center text-gray-400 text-sm mt-4">
-          Passe o mouse para ampliar • Clique para visualizar
-        </p>
       </section>
 
-      {/* BENEFÍCIOS */}
-      <section className="bg-gray-900 p-10 rounded-2xl shadow-inner text-center space-y-6">
-        <h2 className="text-3xl font-bold">
-          Por que {produto.nome} é a escolha perfeita
-        </h2>
+      {/* SOCIAL PROOF #2 */}
+      <section className="py-14">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-semibold text-center">Social Proof</h2>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              'Fixação acima do esperado.',
+              'Entrega rápida e impecável.',
+              'Fragrância marcante e sofisticada.',
+            ].map((t) => (
+              <div key={t} className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
+                <p className="text-[#56719a]">“{t}”</p>
+                <p className="mt-4 text-sm text-[#6b84ab]">Cliente verificado</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        <ul className="list-disc list-inside text-gray-300 space-y-2 max-w-xl mx-auto">
-          <li>
-            Fragrância sofisticada e duradoura —{' '}
+      {/* BRAND BENEFITS */}
+      <section className="py-14 bg-white/70 border-y border-[#c9d9f2]">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+          <div className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
+            <img src={imagemAtiva!} alt={produto.nome} className="w-full h-60 object-cover rounded-xl" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-semibold">Por que escolher a IMBALÁVEL</h2>
+            <ul className="mt-4 space-y-3 text-[#56719a]">
+              <li>✔️ Curadoria com foco em performance real</li>
+              <li>✔️ Produtos originais e certificados</li>
+              <li>✔️ Atendimento humano e rápido</li>
+            </ul>
+            <div className="mt-6 flex">
+              <ComprarButton
+                productId={produto.id}
+                link={produto.link}
+                className="w-full sm:w-auto px-10 py-3 rounded-full bg-[#2f61b9] text-white font-semibold shadow-lg shadow-blue-600/25 hover:bg-[#244e96] transition"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SOCIAL PROOF #3 (UGC) */}
+      <section className="py-14">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-semibold text-center">Social Proof</h2>
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-4">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-2xl border border-[#dbe6f7] h-36 flex items-center justify-center text-[#6b84ab]">
+                ▶
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT */}
+      <section className="py-14 bg-white/70 border-y border-[#c9d9f2]">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 className="text-3xl font-semibold">Sobre a marca</h2>
+            <p className="mt-3 text-[#56719a]">
+              A IMBALÁVEL nasceu para homens que exigem presença, estilo e autenticidade. Cada produto é selecionado por
+              especialistas em fragrâncias.
+            </p>
             <a
               href={produto.link}
               target="_blank"
-              className="underline text-yellow-400"
+              className="inline-block mt-6 bg-white text-[#23446d] px-6 py-3 rounded-full font-semibold shadow-md shadow-blue-900/10 hover:bg-[#f3f7ff] transition"
             >
-              comprar agora
+              Conhecer coleção
             </a>
-          </li>
-          <li>Ideal para ocasiões especiais</li>
-          <li>Embalagem premium</li>
-          <li>Garantia de autenticidade</li>
-        </ul>
-
-        <div className="flex gap-4 justify-center flex-wrap mt-6">
-          <span className="bg-green-700 px-6 py-3 rounded-lg font-bold">
-            100% Autêntico
-          </span>
-          <span className="bg-blue-700 px-6 py-3 rounded-lg font-bold">
-            Satisfação Garantida
-          </span>
-          <span className="bg-yellow-600 px-6 py-3 rounded-lg font-bold">
-            Entrega Rápida
-          </span>
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <ComprarButton
-            productId={produto.id}
-            link={produto.link}
-            className="bg-red-600 text-white text-2xl font-bold px-14 py-6 rounded-xl
-                       transition-all duration-700 hover:scale-110 hover:brightness-110
-                       animate-pulse"
-          />
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
+            <img src={imagemAtiva!} alt={produto.nome} className="w-full h-60 object-cover rounded-xl" />
+          </div>
         </div>
       </section>
 
-      {/* TEXTO MÍSTICO */}
-      <section className="bg-gray-900 p-10 rounded-2xl text-center space-y-6">
-        <h2 className="text-3xl font-bold">A Essência de {produto.nome}</h2>
-
-        <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
-          Produzido a partir de um processo artesanal refinado,{' '}
-          <strong>{produto.nome}</strong> nasce da combinação entre tradição,
-          alquimia e precisão. Cada essência é extraída com técnicas avançadas de
-          maceração e destilação, respeitando o tempo exato de maturação para
-          alcançar sua potência máxima.
-          <br />
-          <br />
-          O resultado é uma fragrância que transcende o comum, despertando
-          presença, mistério e sofisticação em cada nota.
-        </p>
-
-        <a
-          href={produto.link}
-          target="_blank"
-          className="inline-block bg-red-600 text-white text-xl font-bold px-12 py-5 rounded-xl
-                     transition-all hover:scale-105 hover:brightness-110"
-        >
-          Adquirir agora
-        </a>
+      {/* FAQ */}
+      <section className="py-14">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-3xl font-semibold text-center">Perguntas frequentes</h2>
+          <div className="mt-8 space-y-4">
+            {[
+              { q: 'Os produtos são originais?', a: 'Sim. Trabalhamos apenas com fornecedores certificados.' },
+              { q: 'Qual o prazo de entrega?', a: 'Capitais: até 48h. Demais regiões: 3 a 7 dias úteis.' },
+              { q: 'Posso trocar se não gostar?', a: 'Sim, seguimos o prazo legal de arrependimento.' },
+            ].map((item) => (
+              <details key={item.q} className="bg-white rounded-2xl p-5 border border-[#dbe6f7] shadow-lg cursor-pointer">
+                <summary className="font-semibold text-[#1f2f4a]">{item.q}</summary>
+                <p className="text-[#56719a] mt-3">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section className="text-center bg-gray-900 p-12 rounded-2xl space-y-6">
-        <h2 className="text-4xl font-bold">
-          Garanta o seu agora mesmo
-        </h2>
-
-        <p className="text-gray-300 max-w-xl mx-auto">
-          Uma fragrância marcante, exclusiva e inesquecível.{' '}
-          <a
-            href={produto.link}
-            target="_blank"
-            className="underline text-yellow-400 with-hover:text-yellow-300"
-          >
-            Comprar agora
-          </a>
-        </p>
-
-        <ComprarButton
-          productId={produto.id}
-          link={produto.link}
-          className="w-full py-6 text-2xl font-bold max-w-md mx-auto block text-center"
-        />
-
-        <p className="text-yellow-400 font-semibold">
-          Promoção por tempo limitado
-        </p>
+      {/* FINAL CTA */}
+      <section className="py-14 bg-[#a9c3e6]">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-semibold">Escolha sua próxima assinatura</h2>
+          <p className="text-[#3f5b86] mt-3">Finalize agora e receba em casa com total segurança.</p>
+          <div className="mt-6 flex justify-center">
+            <ComprarButton
+              productId={produto.id}
+              link={produto.link}
+              className="px-12 py-3 rounded-full bg-[#2f61b9] text-white font-semibold shadow-lg shadow-blue-700/30 hover:bg-[#244e96] transition animate-pulseGlowBlue"
+            />
+          </div>
+        </div>
       </section>
 
+      {/* FOOTER */}
       <Footer />
     </div>
   );
