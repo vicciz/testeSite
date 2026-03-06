@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ComprarButton } from '@/src/components/button';
 import CarrosselCosmeticos from '@/src/components/Carrossel-Cosmeticos';
@@ -8,6 +9,7 @@ import Footer from '@/src/components/Footer';
 import { Cronometro } from '@/src/components/cronometro';
 import { Produto, buscarProduto } from '@/src/services/produtos';
 import { supabase } from '@/supabaseClient';
+import logoImbalavel from '@/src/public/assets/imagens/logo.png';
 
 
 export default function ProdutoDetalhe() {
@@ -110,6 +112,11 @@ export default function ProdutoDetalhe() {
       <section id="produto-hero" className="max-w-6xl mx-auto px-6 pt-24 pb-14 animate-fadeUp">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="bg-white/70 border border-[#c9d9f2] rounded-3xl p-8 shadow-xl">
+            <Image
+              src={logoImbalavel}
+              alt="Logo Imbalável"
+              className="h-10 w-auto"
+            />
             <span className="text-xs tracking-widest uppercase text-[#4f6b9b]">IMBALÁVEL</span>
             <h1 className="mt-3 text-4xl md:text-5xl font-semibold">
               {produto.nome}
@@ -285,6 +292,7 @@ export default function ProdutoDetalhe() {
       <section className="py-14 bg-white/70 border-y border-[#c9d9f2] animate-fadeUp">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <div>
+            
             <h2 className="text-3xl font-semibold">Sobre a marca</h2>
             <p className="mt-3 text-[#56719a]">
               A IMBALÁVEL nasceu para homens que exigem presença, estilo e autenticidade. Cada produto é selecionado por
@@ -299,13 +307,11 @@ export default function ProdutoDetalhe() {
             </a>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-[#dbe6f7] shadow-lg">
-            {imagemDetalheUrl ? (
-              <img src={imagemDetalheUrl} alt={produto.nome} className="w-full h-60 object-contain rounded-xl bg-white" />
-            ) : (
-              <div className="w-full h-60 rounded-xl bg-slate-100 border border-[#dbe6f7] flex items-center justify-center text-sm text-[#6b84ab]">
-                Sem imagem detalhe
-              </div>
-            )}
+            <Image
+              src={logoImbalavel}
+              alt="Logo Imbalável"
+              className="w-full h-full object-contain rounded-xl bg-white"
+            />
           </div>
         </div>
       </section>
