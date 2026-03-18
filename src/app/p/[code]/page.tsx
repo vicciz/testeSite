@@ -5,6 +5,12 @@ interface PageProps {
   params: { code: string };
 }
 
+export const dynamic = 'force-static';
+
+export function generateStaticParams() {
+  return [];
+}
+
 export default function Page({ params }: PageProps) {
   const id = decodeProductCode(params.code);
   if (!id) {
