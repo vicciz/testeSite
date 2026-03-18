@@ -6,6 +6,8 @@ import CarrosselProdutos from '@/src/components/Carrossel-Cosmeticos';
 import CarrosselOutfit from '@/src/components/Carrossel-Outfit';
 import { listarProdutos } from '@/src/services/api';
 import CarrosselCosmeticos from '@/src/components/Carrossel-Cosmeticos';
+import { supabase } from '@/supabaseClient';
+import { encodeProductId } from '@/src/utils/linkMask';
 
 interface Produto {
   id: number;
@@ -23,8 +25,21 @@ interface Produto {
   imagem3: string;
 }
 
+interface ProdutoResumo {
+  id: number;
+  nome: string;
+  image: string | null;
+}
+
+interface ColecaoHome {
+  id: number;
+  nome: string;
+  produtos: ProdutoResumo[];
+}
+
 export default function Page() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [colecoesHome, setColecoesHome] = useState<ColecaoHome[]>([]);
 
 
   useEffect(() => {
@@ -37,6 +52,153 @@ export default function Page() {
       }
     }
     carregar();
+  }, []);
+
+  useEffect(() => {
+    async function carregarColecoesHome() {
+      const { data: colecoes, error: colecoesError } = await supabase
+        .from('colecao')
+        .select('id,nome,mostrar_home')
+        .eq('mostrar_home', true)
+        .order('created_at', { ascending: false });
+
+      if (colecoesError) {
+        const { data: fallbackColecoes, error: fallbackError } = await supabase
+          .from('colecao')
+          .select('id,nome')
+          .order('created_at', { ascending: false });
+
+        if (fallbackError) {
+          console.error('Erro ao carregar coleções da home (fallback):', fallbackError);
+          return;
+        }
+
+        if (!fallbackColecoes?.length) {
+          setColecoesHome([]);
+          return;
+        }
+
+        const colecaoIds = fallbackColecoes.map((c: any) => c.id);
+        const { data: relacoes, error: relacoesError } = await supabase
+          .from('colecao_produto')
+          .select('colecao_id, produto_id')
+          .in('colecao_id', colecaoIds);
+
+        if (relacoesError) {
+          console.error('Erro ao carregar relações de coleções:', relacoesError);
+          const normalized = fallbackColecoes.map((c: any) => ({
+            id: c.id,
+            nome: c.nome,
+            produtos: [],
+          }));
+          setColecoesHome(normalized);
+          return;
+        }
+
+        const produtoIds = Array.from(
+          new Set((relacoes || []).map((r: any) => r.produto_id))
+        );
+
+        if (!produtoIds.length) {
+          setColecoesHome(
+            fallbackColecoes.map((c: any) => ({ id: c.id, nome: c.nome, produtos: [] }))
+          );
+          return;
+        }
+
+        const { data: produtosData, error: produtosError } = await supabase
+          .from('produtos')
+          .select('id,nome,image')
+          .in('id', produtoIds);
+
+        if (produtosError) {
+          console.error('Erro ao carregar produtos das coleções:', produtosError);
+          return;
+        }
+
+        const produtosMap = new Map<number, ProdutoResumo>();
+        (produtosData || []).forEach((p: any) => {
+          produtosMap.set(p.id, { id: p.id, nome: p.nome, image: p.image || null });
+        });
+
+        const produtosPorColecao = new Map<number, ProdutoResumo[]>();
+        (relacoes || []).forEach((r: any) => {
+          const list = produtosPorColecao.get(r.colecao_id) || [];
+          const produto = produtosMap.get(r.produto_id);
+          if (produto) list.push(produto);
+          produtosPorColecao.set(r.colecao_id, list);
+        });
+
+        const normalized = fallbackColecoes.map((c: any) => ({
+          id: c.id,
+          nome: c.nome,
+          produtos: (produtosPorColecao.get(c.id) || []).slice(0, 3),
+        }));
+
+        setColecoesHome(normalized);
+        return;
+      }
+
+      if (!colecoes?.length) {
+        setColecoesHome([]);
+        return;
+      }
+
+      const colecaoIds = colecoes.map((c: any) => c.id);
+      const { data: relacoes, error: relacoesError } = await supabase
+        .from('colecao_produto')
+        .select('colecao_id, produto_id')
+        .in('colecao_id', colecaoIds);
+
+      if (relacoesError) {
+        console.error('Erro ao carregar relações de coleções:', relacoesError);
+        return;
+      }
+
+      const produtoIds = Array.from(
+        new Set((relacoes || []).map((r: any) => r.produto_id))
+      );
+
+      if (!produtoIds.length) {
+        setColecoesHome(
+          colecoes.map((c: any) => ({ id: c.id, nome: c.nome, produtos: [] }))
+        );
+        return;
+      }
+
+      const { data: produtosData, error: produtosError } = await supabase
+        .from('produtos')
+        .select('id,nome,image')
+        .in('id', produtoIds);
+
+      if (produtosError) {
+        console.error('Erro ao carregar produtos das coleções:', produtosError);
+        return;
+      }
+
+      const produtosMap = new Map<number, ProdutoResumo>();
+      (produtosData || []).forEach((p: any) => {
+        produtosMap.set(p.id, { id: p.id, nome: p.nome, image: p.image || null });
+      });
+
+      const produtosPorColecao = new Map<number, ProdutoResumo[]>();
+      (relacoes || []).forEach((r: any) => {
+        const list = produtosPorColecao.get(r.colecao_id) || [];
+        const produto = produtosMap.get(r.produto_id);
+        if (produto) list.push(produto);
+        produtosPorColecao.set(r.colecao_id, list);
+      });
+
+      const normalized = colecoes.map((c: any) => ({
+        id: c.id,
+        nome: c.nome,
+        produtos: (produtosPorColecao.get(c.id) || []).slice(0, 3),
+      }));
+
+      setColecoesHome(normalized);
+    }
+
+    carregarColecoesHome();
   }, []);
 
   return (
@@ -114,6 +276,54 @@ export default function Page() {
           </div>
         ))}
       </section>
+
+      {colecoesHome.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 pb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold">Coleções em destaque</h2>
+            <p className="text-zinc-600 mt-4">Seleções especiais definidas pela curadoria</p>
+          </div>
+
+          <div className="space-y-10">
+            {colecoesHome.map((colecao) => (
+              <div key={colecao.id} className="bg-white/80 border border-black/5 backdrop-blur rounded-2xl p-8">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+                  <h3 className="text-2xl font-semibold">{colecao.nome}</h3>
+                  <a
+                    href={`/colecao/${colecao.id}`}
+                    className="text-sm text-indigo-600 hover:underline"
+                  >
+                    Ver coleção completa
+                  </a>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {colecao.produtos.map((p) => {
+                    const imageUrl = p.image
+                      ? supabase.storage.from('produtos').getPublicUrl(p.image).data.publicUrl
+                      : '/placeholder.png';
+
+                    return (
+                      <a
+                        key={p.id}
+                        href={`/p?code=${encodeProductId(p.id)}`}
+                        className="bg-white border border-slate-200 rounded-2xl shadow-lg p-4 text-slate-900 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={p.nome}
+                          className="w-full h-44 object-contain bg-slate-50 rounded-xl mb-3"
+                        />
+                        <h4 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h4>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* DESTAQUES */}
       <section

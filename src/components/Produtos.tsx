@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { encodeProductId } from '../utils/linkMask';
 
 interface ProdutoProps {
   id: number;
@@ -61,7 +62,7 @@ const imageUrl = image
 
       <div className="flex gap-2 mt-2">
         {/* Botão Comprar redireciona para página do produto */}
-        <Link href={`/produto?id=${id}`}>
+        <Link href={`/p?code=${encodeProductId(id)}`}>
           <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
             Comprar
           </button>

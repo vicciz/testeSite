@@ -11,17 +11,27 @@ export default function CadastrarProduto() {
   const [detalhes, setDetalhes] = useState("");
   const [fornecedor, setFornecedor] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
+  const [colecaoId, setColecaoId] = useState("");
   const [link, setLink] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [detailImageFile, setDetailImageFile] = useState<File | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [colecoes, setColecoes] = useState<{ id: number; nome: string }[]>([]);
 
   useEffect(() => {
     async function carregarCategorias() {
       const { data, error } = await listarCategorias();
       if (!error && data) setCategorias(data);
     }
+    async function carregarColecoes() {
+      const { data, error } = await supabase
+        .from('colecao')
+        .select('id,nome')
+        .order('nome', { ascending: true });
+      if (!error && data) setColecoes(data as { id: number; nome: string }[]);
+    }
     carregarCategorias();
+    carregarColecoes();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,6 +95,18 @@ export default function CadastrarProduto() {
         console.error('Erro ao cadastrar produto:', error);
         alert('Erro ao cadastrar produto');
         return;
+      }
+
+      if (colecaoId && data?.id) {
+        const { error: relacaoError } = await supabase
+          .from('colecao_produto')
+          .insert({ colecao_id: Number(colecaoId), produto_id: data.id });
+
+        if (relacaoError) {
+          console.error('Erro ao vincular coleção:', relacaoError);
+          alert('Produto cadastrado, mas não foi possível vincular à coleção.' );
+          return;
+        }
       }
 
       alert('Produto cadastrado com sucesso!');
@@ -164,6 +186,19 @@ export default function CadastrarProduto() {
         >
           <option value="">Selecione a categoria</option>
           {categorias.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.nome}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="w-full p-3 rounded bg-slate-100 border border-black/10"
+          value={colecaoId}
+          onChange={(e) => setColecaoId(e.target.value)}
+        >
+          <option value="">Coleção (opcional)</option>
+          {colecoes.map((c) => (
             <option key={c.id} value={c.id}>
               {c.nome}
             </option>

@@ -39,7 +39,7 @@ export default function AdminHome() {
         </Link>
       </div>
     );
-  }
+  } // FIM DO BLOQUEIO
 
   return (
     <div className="min-h-screen bg-slate-50 text-zinc-900 flex">
@@ -63,6 +63,11 @@ export default function AdminHome() {
             📦 Produtos
           </Link>
 
+          <Link href="/admin/catalogo"
+            className="hover:text-indigo-600">
+            🗂️ Catálogos
+          </Link>
+
           <Link href="/admin/pedidos"
             className="hover:text-indigo-600">
             🧾 Pedidos
@@ -80,7 +85,7 @@ export default function AdminHome() {
       <main className="flex-1 p-10">
 
         <h1 className="text-3xl font-bold mb-2">
-          Bem-vindo, {user.nome}
+          Bem-vindo, {user?.nome}
         </h1>
 
         <p className="text-zinc-600 mb-8">
@@ -98,6 +103,16 @@ export default function AdminHome() {
               </p>
             </Link>
 
+          </div>
+
+          <div className="bg-white p-6 rounded border border-black/10 shadow-sm">
+            <h3 className="text-lg mb-2">Criar coleção</h3>
+
+            <Link href="/admin/catalogo">
+              <p className="text-sm text-zinc-600 hover:text-indigo-600 cursor-pointer">
+                Montar nova coleção
+              </p>
+            </Link>
           </div>
 
           <div className="bg-white p-6 rounded border border-black/10 shadow-sm">

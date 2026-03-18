@@ -14,6 +14,7 @@ interface Produto {
   image: File | string;
   rating: string;
   oculto?: boolean | null;
+  destaque?: boolean | null;
 }
 
 interface User {
@@ -57,6 +58,27 @@ export default function CatalogoAdmin() {
 
     setProdutos(prev =>
       prev.map(p => (p.id === id ? { ...p, oculto: !ocultoAtual } : p))
+    );
+  }
+
+  async function handleToggleDestaque(id: number, destaqueAtual?: boolean | null) {
+    const { error } = await supabase
+      .from('produtos')
+      .update({ destaque: !destaqueAtual })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erro ao atualizar destaque:', error);
+      if (error.message?.toLowerCase().includes('column') && error.message?.toLowerCase().includes('destaque')) {
+        alert('A coluna "destaque" não existe. Crie uma coluna boolean em produtos com default false.');
+      } else {
+        alert(`Erro ao atualizar destaque: ${error.message}`);
+      }
+      return;
+    }
+
+    setProdutos(prev =>
+      prev.map(p => (p.id === id ? { ...p, destaque: !destaqueAtual } : p))
     );
   }
 
@@ -104,6 +126,7 @@ export default function CatalogoAdmin() {
             <th>Nome</th>
             <th>Categoria</th>
             <th>Visibilidade</th>
+            <th>Destaque</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -140,6 +163,19 @@ export default function CatalogoAdmin() {
                   }`}
                 >
                   {p.oculto ? 'Oculto' : 'Visível'}
+                </button>
+              </td>
+
+              <td>
+                <button
+                  onClick={() => handleToggleDestaque(p.id, p.destaque)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold border transition ${
+                    p.destaque
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {p.destaque ? 'Em destaque' : 'Sem destaque'}
                 </button>
               </td>
 

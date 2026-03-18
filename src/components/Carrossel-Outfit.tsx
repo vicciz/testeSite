@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Produto, listarProdutos } from '../services/produtos';
+import { encodeProductId } from '../utils/linkMask';
 import { supabase } from '../../supabaseClient';
 
 export default function CarrosselProdutos() {
@@ -38,7 +39,7 @@ export default function CarrosselProdutos() {
             return (
               <Link
                 key={p.id}
-                href={`/produto?id=${p.id}`}
+                href={`/p?code=${encodeProductId(p.id)}`}
                 className="w-[260px] bg-white border border-slate-200
                            rounded-2xl shadow-lg p-4 text-slate-900
                            hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
@@ -71,7 +72,7 @@ export default function CarrosselProdutos() {
             return (
               <Link
                 key={p.id}
-                href={`/produto?id=${p.id}`}
+                href={`/p?code=${encodeProductId(p.id)}`}
                 className="min-w-[260px] bg-white border border-slate-200
                            rounded-2xl shadow-lg p-4 text-slate-900"
               >

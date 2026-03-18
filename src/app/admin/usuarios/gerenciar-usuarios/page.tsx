@@ -77,6 +77,42 @@ export default function CatalogoAdmin() {
     setUsuarios(data || []);
   }
 
+  async function removerSelecionados() {
+    if (!selecionados.length) return;
+    if (!confirm('Deseja realmente excluir os usuários selecionados?')) return;
+
+    const results = await Promise.all(
+      selecionados.map((id) => excluirUsuario(id))
+    );
+
+    const hasError = results.some(r => r.error);
+    if (hasError) {
+      alert('Erro ao excluir um ou mais usuários');
+      return;
+    }
+
+    setSelecionados([]);
+    const { data } = await listarUsuarios(termo);
+    setUsuarios(data || []);
+  }
+
+  async function atualizarRoleSelecionados(role: 'user' | 'admin') {
+    if (!selecionados.length) return;
+
+    const results = await Promise.all(
+      selecionados.map((id) => atualizarUsuario(id, { role }))
+    );
+
+    const hasError = results.some(r => r.error);
+    if (hasError) {
+      alert('Erro ao atualizar permissões');
+      return;
+    }
+
+    const { data } = await listarUsuarios(termo);
+    setUsuarios(data || []);
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 text-zinc-900 px-6 py-10">
       <div className="max-w-7xl mx-auto">
@@ -108,6 +144,13 @@ export default function CatalogoAdmin() {
                            placeholder:text-zinc-500
                            focus:outline-none focus:ring-2 focus:ring-pink-600"
               />
+              <button
+                type="button"
+                onClick={() => setTermo('')}
+                className="mt-2 text-xs text-indigo-600 hover:underline"
+              >
+                Listar todos
+              </button>
             </div>
 
             <div>
@@ -118,6 +161,27 @@ export default function CatalogoAdmin() {
               <EnviarEmailUsuarios
                 usuarios={usuarios.filter(u => selecionados.includes(u.id))}
               />
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={() => atualizarRoleSelecionados('admin')}
+                  className="bg-indigo-600 text-white px-3 py-2 rounded text-xs"
+                >
+                  Tornar admin
+                </button>
+                <button
+                  onClick={() => atualizarRoleSelecionados('user')}
+                  className="bg-slate-200 text-zinc-900 px-3 py-2 rounded text-xs"
+                >
+                  Tornar user
+                </button>
+                <button
+                  onClick={removerSelecionados}
+                  className="bg-rose-600 text-white px-3 py-2 rounded text-xs"
+                >
+                  Excluir selecionados
+                </button>
+              </div>
             </div>
 
             <div className="text-sm text-zinc-600">

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Produto, listarProdutos } from '../services/produtos';
+import { encodeProductId } from '../utils/linkMask';
 import { supabase } from '../../supabaseClient';
 
 
@@ -12,13 +13,30 @@ export default function CarrosselCosmeticos() {
   // fetch products from Supabase instead of PHP API
   useEffect(() => {
     async function load(categoria?: string, tipo?: string) {
-      const { data, error } = await listarProdutos(categoria, tipo);
-      if (error) {
-        console.error('Erro ao listar produtos:', error);
+      const { data: destaques, error: destaquesError } = await supabase
+        .from('produtos')
+        .select('*')
+        .eq('destaque', true);
+
+      if (destaquesError) {
+        const msg = destaquesError.message?.toLowerCase() || '';
+        if (msg.includes('destaque') || msg.includes('column')) {
+          const { data, error } = await listarProdutos(categoria, tipo);
+          if (error) {
+            console.error('Erro ao listar produtos:', error);
+            setProdutos([]);
+            return;
+          }
+          setProdutos(data || []);
+          return;
+        }
+
+        console.error('Erro ao listar produtos em destaque:', destaquesError);
         setProdutos([]);
         return;
       }
-      setProdutos(data || []);
+
+      setProdutos(destaques || []);
     }
 
     load();
@@ -39,7 +57,7 @@ export default function CarrosselCosmeticos() {
             return (
               <Link
                 key={p.id}
-                href={`/produto?id=${p.id}`}
+                href={`/p?code=${encodeProductId(p.id)}`}
                 className="w-[260px] bg-white border border-slate-200
                            rounded-2xl shadow-lg p-4 text-slate-900
                            hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
@@ -72,7 +90,7 @@ export default function CarrosselCosmeticos() {
             return (
               <Link
                 key={p.id}
-                href={`/produto?id=${p.id}`}
+                href={`/p?code=${encodeProductId(p.id)}`}
                 className="min-w-[260px] bg-white border border-slate-200
                            rounded-2xl shadow-lg p-4 text-slate-900"
               >
