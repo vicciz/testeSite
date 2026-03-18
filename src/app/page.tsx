@@ -312,7 +312,7 @@ export default function Page() {
                         <img
                           src={imageUrl}
                           alt={p.nome}
-                          className="w-full h-44 object-contain bg-slate-50 rounded-xl mb-3"
+                          className="w-full h-44 object-cover rounded-xl mb-3"
                         />
                         <h4 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h4>
                       </a>

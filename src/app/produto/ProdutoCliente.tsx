@@ -152,7 +152,7 @@ export default function ProdutoDetalhe() {
               <img
                 src={imagemAtiva!}
                 alt={produto.nome}
-                className="w-full h-[520px] object-contain bg-transparent cursor-zoom-in"
+                className="w-full h-[520px] object-cover cursor-zoom-in scale-[1.08] origin-center"
                 onClick={() => setModalOpen(true)}
               />
             </div>

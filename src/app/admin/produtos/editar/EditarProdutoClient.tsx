@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Cropper, { Area } from "react-easy-crop";
 import { buscarProduto, editarProduto } from '@/src/services/produtos';
 import { listarCategorias, Categoria } from '@/src/services/categorias';
 import { supabase } from '@/supabaseClient';
@@ -40,6 +41,13 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
   const [previewImagemExtra2, setPreviewImagemExtra2] = useState<string | null>(null);
   const [previewImagemExtra3, setPreviewImagemExtra3] = useState<string | null>(null);
   const detalhesRef = useRef<HTMLTextAreaElement | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [cropTarget, setCropTarget] = useState<"principal" | "detalhe" | "extra1" | "extra2" | "extra3" | null>(null);
+  const [cropAspect, setCropAspect] = useState(4 / 5);
 
   const [loading, setLoading] = useState(false);
 
@@ -155,48 +163,116 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
     });
   };
 
+  const openCropper = (file: File, target: "principal" | "detalhe" | "extra1" | "extra2" | "extra3") => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setCropTarget(target);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCropAspect(4 / 5);
+      setCropOpen(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-
     const file = e.target.files[0];
-    if (file) {
-      setPreviewImagemPrincipal(URL.createObjectURL(file));
-    }
-
-    setForm({
-      ...form,
-      image: file,
-    });
+    if (!file) return;
+    openCropper(file, "principal");
   };
 
   const handleDetailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-
     const file = e.target.files[0];
-    if (file) {
-      setPreviewImagemDetalhe(URL.createObjectURL(file));
-    }
-
-    setForm({
-      ...form,
-      imagem_detalhe: file,
-    });
+    if (!file) return;
+    openCropper(file, "detalhe");
   };
 
   const handleExtraFileChange = (index: 1 | 2 | 3) => (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-
     const file = e.target.files[0];
     if (!file) return;
+    const target = index === 1 ? "extra1" : index === 2 ? "extra2" : "extra3";
+    openCropper(file, target);
+  };
 
-    if (index === 1) setPreviewImagemExtra1(URL.createObjectURL(file));
-    if (index === 2) setPreviewImagemExtra2(URL.createObjectURL(file));
-    if (index === 3) setPreviewImagemExtra3(URL.createObjectURL(file));
+  const onCropComplete = (_: Area, croppedPixels: Area) => {
+    setCroppedAreaPixels(croppedPixels);
+  };
 
-    setForm({
-      ...form,
-      [`image${index}`]: file,
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', (error) => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
     });
+
+  const getCroppedBlob = async (imageSrc: string, pixelCrop: Area) => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.9);
+    });
+  };
+
+  const aplicarCrop = async () => {
+    if (!cropImageSrc || !croppedAreaPixels || !cropTarget) {
+      setCropOpen(false);
+      return;
+    }
+
+    const blob = await getCroppedBlob(cropImageSrc, croppedAreaPixels);
+    if (!blob) {
+      setCropOpen(false);
+      return;
+    }
+
+    const file = new File([blob], `crop-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    const previewUrl = URL.createObjectURL(file);
+
+    if (cropTarget === "principal") {
+      setPreviewImagemPrincipal(previewUrl);
+      setForm({ ...form, image: file });
+    }
+    if (cropTarget === "detalhe") {
+      setPreviewImagemDetalhe(previewUrl);
+      setForm({ ...form, imagem_detalhe: file });
+    }
+    if (cropTarget === "extra1") {
+      setPreviewImagemExtra1(previewUrl);
+      setForm({ ...form, image1: file });
+    }
+    if (cropTarget === "extra2") {
+      setPreviewImagemExtra2(previewUrl);
+      setForm({ ...form, image2: file });
+    }
+    if (cropTarget === "extra3") {
+      setPreviewImagemExtra3(previewUrl);
+      setForm({ ...form, image3: file });
+    }
+
+    setCropOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -312,17 +388,27 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
         extraImage3Path = uploadData.path;
       }
 
+      const toNumberOrUndefined = (value: string) => {
+        if (value === "" || value === null || value === undefined) return undefined;
+        const num = Number(value);
+        return Number.isFinite(num) ? num : undefined;
+      };
+
       const updateData: any = {
         nome: form.nome,
-        preco: form.preco,
         link: form.link,
-        rating: form.rating,
-        reviews: form.reviews,
         descricao: form.descricao,
         detalhes: form.detalhes,
         fornecedor: form.fornecedor,
         ...(form.categoria_id ? { categoria_id: Number(form.categoria_id) } : {}),
       };
+
+      const precoNumber = toNumberOrUndefined(form.preco);
+      if (precoNumber !== undefined) updateData.preco = precoNumber;
+      const ratingNumber = toNumberOrUndefined(form.rating);
+      if (ratingNumber !== undefined) updateData.rating = ratingNumber;
+      const reviewsNumber = toNumberOrUndefined(form.reviews);
+      if (reviewsNumber !== undefined) updateData.reviews = reviewsNumber;
 
       if (imagePath) {
         updateData.image = imagePath;
@@ -530,7 +616,7 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
         />
       </div>
 
-      <label>Imagem Principal</label>
+      <label>Imagem Principal (com recorte)</label>
       <input
         type="file"
         name="image"
@@ -653,6 +739,76 @@ export default function EditarProduto({ id: idProp }: EditarProdutoProps) {
       >
         {loading ? "Atualizando..." : "Salvar Produto"}
       </button>
+
+      {cropOpen && cropImageSrc && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-4 w-full max-w-3xl">
+            <div className="relative w-full h-[60vh] bg-black/10 rounded-xl overflow-hidden">
+              <Cropper
+                image={cropImageSrc}
+                crop={crop}
+                zoom={zoom}
+                  aspect={cropAspect}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="mt-4 flex items-center justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-zinc-600">Dimensão:</span>
+                  <button
+                    type="button"
+                    onClick={() => setCropAspect(1)}
+                    className={`px-2 py-1 rounded text-xs border ${cropAspect === 1 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 border-slate-200'}`}
+                  >
+                    1:1
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCropAspect(4 / 5)}
+                    className={`px-2 py-1 rounded text-xs border ${cropAspect === 4 / 5 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 border-slate-200'}`}
+                  >
+                    4:5
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCropAspect(16 / 9)}
+                    className={`px-2 py-1 rounded text-xs border ${cropAspect === 16 / 9 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 border-slate-200'}`}
+                  >
+                    16:9
+                  </button>
+                </div>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-40"
+                />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCropOpen(false)}
+                  className="px-4 py-2 rounded bg-slate-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={aplicarCrop}
+                  className="px-4 py-2 rounded bg-indigo-600 text-white"
+                >
+                  Usar imagem
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
