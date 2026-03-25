@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Footer from '@/src/components/Footer';
-import CarrosselProdutos from '@/src/components/Carrossel-Cosmeticos';
-import CarrosselOutfit from '@/src/components/Carrossel-Outfit';
 import { listarProdutos } from '@/src/services/api';
 import CarrosselCosmeticos from '@/src/components/Carrossel-Cosmeticos';
 import { supabase } from '@/supabaseClient';
@@ -309,11 +307,13 @@ export default function Page() {
                         href={`/p?code=${encodeProductId(p.id)}`}
                         className="bg-white border border-slate-200 rounded-2xl shadow-lg p-4 text-slate-900 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
                       >
-                        <img
-                          src={imageUrl}
-                          alt={p.nome}
-                          className="w-full h-44 object-cover rounded-xl mb-3"
-                        />
+                        <div className="w-full aspect-square overflow-hidden rounded-xl mb-3">
+                          <img
+                            src={imageUrl}
+                            alt={p.nome}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <h4 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h4>
                       </a>
                     );
