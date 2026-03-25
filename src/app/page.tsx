@@ -38,6 +38,45 @@ interface ColecaoHome {
 export default function Page() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [colecoesHome, setColecoesHome] = useState<ColecaoHome[]>([]);
+  const [curtidas, setCurtidas] = useState<Set<number>>(new Set());
+  const [descurtidas, setDescurtidas] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const c = JSON.parse(localStorage.getItem('curtidas') || '[]');
+    const d = JSON.parse(localStorage.getItem('descurtidas') || '[]');
+    setCurtidas(new Set(c));
+    setDescurtidas(new Set(d));
+  }, []);
+
+  function toggleCurtir(e: React.MouseEvent, id: number) {
+    e.preventDefault();
+    setCurtidas((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        setDescurtidas((pd) => { const nd = new Set(pd); nd.delete(id); localStorage.setItem('descurtidas', JSON.stringify([...nd])); return nd; });
+      }
+      localStorage.setItem('curtidas', JSON.stringify([...next]));
+      return next;
+    });
+  }
+
+  function toggleDescurtir(e: React.MouseEvent, id: number) {
+    e.preventDefault();
+    setDescurtidas((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        setCurtidas((pc) => { const nc = new Set(pc); nc.delete(id); localStorage.setItem('curtidas', JSON.stringify([...nc])); return nc; });
+      }
+      localStorage.setItem('descurtidas', JSON.stringify([...next]));
+      return next;
+    });
+  }
 
 
   useEffect(() => {
@@ -301,21 +340,49 @@ export default function Page() {
                       ? supabase.storage.from('produtos').getPublicUrl(p.image).data.publicUrl
                       : '/placeholder.png';
 
+                    const curtido = curtidas.has(p.id);
+                    const descurtido = descurtidas.has(p.id);
+
                     return (
-                      <a
+                      <div
                         key={p.id}
-                        href={`/p?code=${encodeProductId(p.id)}`}
-                        className="bg-white border border-slate-200 rounded-2xl shadow-lg p-4 text-slate-900 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+                        className="bg-white border border-slate-200 rounded-2xl shadow-lg p-4 text-slate-900 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col"
                       >
-                        <div className="w-full aspect-square overflow-hidden rounded-xl mb-3">
-                          <img
-                            src={imageUrl}
-                            alt={p.nome}
-                            className="w-full h-full object-cover"
-                          />
+                        <a href={`/p?code=${encodeProductId(p.id)}`}>
+                          <div className="w-full aspect-square overflow-hidden rounded-xl mb-3">
+                            <img
+                              src={imageUrl}
+                              alt={p.nome}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <h4 className="font-semibold text-sm mb-3 line-clamp-2">{p.nome}</h4>
+                        </a>
+                        <div className="flex gap-2 mt-auto">
+                          <button
+                            onClick={(e) => toggleCurtir(e, p.id)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                              curtido
+                                ? 'bg-pink-500 text-white shadow-md shadow-pink-200'
+                                : 'bg-slate-100 text-slate-500 hover:bg-pink-50 hover:text-pink-500'
+                            }`}
+                          >
+                            <span className="text-base">{curtido ? '❤️' : '🤍'}</span>
+                            Curtir
+                          </button>
+                          <button
+                            onClick={(e) => toggleDescurtir(e, p.id)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                              descurtido
+                                ? 'bg-slate-600 text-white shadow-md shadow-slate-200'
+                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700'
+                            }`}
+                          >
+                            <span className="text-base">👎</span>
+                            Não curtir
+                          </button>
                         </div>
-                        <h4 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h4>
-                      </a>
+                      </div>
                     );
                   })}
                 </div>
