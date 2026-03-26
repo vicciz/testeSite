@@ -3,6 +3,10 @@
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 import { ComprarButton } from '@/src/components/button';
 import CarrosselCosmeticos from '@/src/components/Carrossel-Cosmeticos';
 import Footer from '@/src/components/Footer';
@@ -35,6 +39,9 @@ export default function ProdutoDetalhe() {
             data.image1,
             data.image2,
             data.image3,
+            data.image4,
+            data.image5,
+            data.image6,
             data.imagem_detalhe,
           ].filter(Boolean) as string[];
 
@@ -91,10 +98,20 @@ export default function ProdutoDetalhe() {
     produto.image1,
     produto.image2,
     produto.image3,
+    produto.image4,
+    produto.image5,
+    produto.image6,
     produto.imagem_detalhe,
   ].filter(Boolean) as string[];
 
-  const detalheFallback = ([produto.image1, produto.image2, produto.image3].filter(Boolean) as string[])[0];
+  const detalheFallback = ([
+    produto.image1,
+    produto.image2,
+    produto.image3,
+    produto.image4,
+    produto.image5,
+    produto.image6,
+  ].filter(Boolean) as string[])[0];
 
   const imagemDetalheUrl = produto.imagem_detalhe
     ? (produto.imagem_detalhe.startsWith('http')
@@ -105,6 +122,23 @@ export default function ProdutoDetalhe() {
           ? detalheFallback
           : supabase.storage.from('produtos').getPublicUrl(detalheFallback).data.publicUrl)
       : null;
+
+  const detalhesRender = (produto.detalhes || produto.descricao || '').replace(
+    /<div\s+style="([^"]*)">\s*!\[([^\]]*)\]\(([^)]+)\)\s*<\/div>/gi,
+    (_m, styleString: string, alt: string, src: string) => {
+      const textAlignMatch = styleString.match(/text-align\s*:\s*(left|center|right)/i);
+      const marginBottomMatch = styleString.match(/margin-bottom\s*:\s*([^;]+)/i);
+      const align = textAlignMatch?.[1]?.toLowerCase();
+      const margin = align === 'center' ? '0 auto' : align === 'left' ? '0 auto 0 0' : align === 'right' ? '0 0 0 auto' : '0 auto';
+      const marginBottom = marginBottomMatch?.[1]?.trim();
+      return `<img src="${src}" alt="${alt}" style="max-width:100%;display:block;margin:${margin};${marginBottom ? `margin-bottom:${marginBottom};` : ''}" />`;
+    }
+  )
+  // Converte \n para <br> dentro de elementos HTML (divs de texto formatado)
+  .replace(
+    /(<(?:div|p|span|h[1-6])[^>]*>)((?:[\s\S](?!<\/?(?:div|p|span|h[1-6])))*?)(<\/(?:div|p|span|h[1-6])>)/gi,
+    (_, open, inner, close) => open + inner.replace(/\n/g, '<br>\n') + close
+  );
 
   return (
     <div className="min-h-screen bg-[#e3eef9] text-[#1f2f4a]">
@@ -232,9 +266,35 @@ export default function ProdutoDetalhe() {
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center">Descrição do Produto</h2>
           <div className="mt-8 bg-white rounded-2xl p-8 border border-[#dbe6f7] shadow-lg">
-            <p className="text-[#56719a] text-lg leading-relaxed">
-              {produto.detalhes || produto.descricao}
-            </p>
+            <div className="text-[#56719a] text-lg leading-relaxed space-y-4">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  img: ({ src = '', alt = '', style, ...props }) => (
+                    <img
+                      {...props}
+                      src={src.startsWith('http') ? src : supabase.storage.from('produtos').getPublicUrl(src).data.publicUrl}
+                      alt={alt}
+                      style={style as React.CSSProperties}
+                      className="max-w-2xl rounded-xl border border-[#dbe6f7] shadow-sm my-4"
+                    />
+                  ),
+                  a: ({ href = '', children }) => (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#2f61b9] underline break-all"
+                    >
+                      {children}
+                    </a>
+                  ),
+                }}
+              >
+                {detalhesRender}
+              </ReactMarkdown>
+            </div>
           </div>
         </div>
       </section>

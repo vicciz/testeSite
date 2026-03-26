@@ -12,6 +12,9 @@ export interface Produto {
   image1?: string | null;
   image2?: string | null;
   image3?: string | null;
+  image4?: string | null;
+  image5?: string | null;
+  image6?: string | null;
   imagem_detalhe?: string | null;
   oculto?: boolean | null;
   descricao?: string | null;
@@ -19,6 +22,59 @@ export interface Produto {
   fornecedor?: string | null;
   categoria_id?: number | null;
   categorias?: { nome: string } | null;
+}
+
+function normalizeProduto<T extends Record<string, any>>(produto: T): Produto {
+  return {
+    ...produto,
+    image1: produto.image1 ?? produto.imagem1 ?? null,
+    image2: produto.image2 ?? produto.imagem2 ?? null,
+    image3: produto.image3 ?? produto.imagem3 ?? null,
+    image4: produto.image4 ?? produto.imagem4 ?? null,
+    image5: produto.image5 ?? produto.imagem5 ?? null,
+    image6: produto.image6 ?? produto.imagem6 ?? null,
+  } as Produto;
+}
+
+function toLegacyImageKeys(produto: Partial<Produto>): Record<string, any> {
+  const payload: Record<string, any> = { ...produto };
+
+  if (payload.image1 !== undefined) {
+    payload.imagem1 = payload.image1;
+    delete payload.image1;
+  }
+
+  if (payload.image2 !== undefined) {
+    payload.imagem2 = payload.image2;
+    delete payload.image2;
+  }
+
+  if (payload.image3 !== undefined) {
+    payload.imagem3 = payload.image3;
+    delete payload.image3;
+  }
+
+  if (payload.image4 !== undefined) {
+    payload.imagem4 = payload.image4;
+    delete payload.image4;
+  }
+
+  if (payload.image5 !== undefined) {
+    payload.imagem5 = payload.image5;
+    delete payload.image5;
+  }
+
+  if (payload.image6 !== undefined) {
+    payload.imagem6 = payload.image6;
+    delete payload.image6;
+  }
+
+  return payload;
+}
+
+function hasImageColumnError(error: any): boolean {
+  const message = String(error?.message || '');
+  return /Could not find the 'image[1-6]' column/i.test(message);
 }
 
 /**
@@ -41,7 +97,10 @@ export async function listarProdutos(
   }
 
   const { data, error } = await query;
-  return { data, error };
+  return {
+    data: data ? data.map((p: any) => normalizeProduto(p)) : null,
+    error,
+  };
 }
 
 /**
@@ -55,7 +114,7 @@ export async function buscarProduto(
     .select('*')
     .eq('id', id)
     .single();
-  return { data, error };
+  return { data: data ? normalizeProduto(data as any) : null, error };
 }
 
 /**
@@ -70,6 +129,25 @@ export async function cadastrarProduto(
     .insert(produto)
     .select()
     .single();
+
+  if (!error) {
+    return { data: data ? normalizeProduto(data as any) : null, error: null };
+  }
+
+  if (hasImageColumnError(error)) {
+    const fallbackPayload = toLegacyImageKeys(produto);
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from('produtos')
+      .insert(fallbackPayload)
+      .select()
+      .single();
+
+    return {
+      data: fallbackData ? normalizeProduto(fallbackData as any) : null,
+      error: fallbackError,
+    };
+  }
+
   return { data, error };
 }
 
@@ -83,7 +161,27 @@ export async function editarProduto(
     .eq('id', id)
     .select()
     .single();
-  return { data, error };
+
+  if (!error) {
+    return { data: data ? normalizeProduto(data as any) : null, error: null };
+  }
+
+  if (hasImageColumnError(error)) {
+    const fallbackPayload = toLegacyImageKeys(produto);
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from('produtos')
+      .update(fallbackPayload)
+      .eq('id', id)
+      .select()
+      .single();
+
+    return {
+      data: fallbackData ? normalizeProduto(fallbackData as any) : null,
+      error: fallbackError,
+    };
+  }
+
+  return { data: null, error };
 }
 
 export async function excluirProduto(
