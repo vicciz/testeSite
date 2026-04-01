@@ -62,11 +62,15 @@ export default function CarrosselCosmeticos() {
                            rounded-2xl shadow-lg p-4 text-slate-900
                            hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
               >
-                <img
-                  src={imageUrl}
-                  alt={p.nome}
-                  className="w-full h-44 object-cover rounded-xl mb-3"
-                />
+                <div className="w-full mb-3">
+                  <div className="overflow-hidden rounded-xl bg-slate-50" style={{ paddingBottom: '100%', position: 'relative' }}>
+                    <img
+                      src={imageUrl}
+                      alt={p.nome}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                </div>
                 <h3 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h3>
                 
               </Link>
@@ -94,11 +98,15 @@ export default function CarrosselCosmeticos() {
                 className="min-w-[260px] bg-white border border-slate-200
                            rounded-2xl shadow-lg p-4 text-slate-900"
               >
-                <img
-                  src={imageUrl}
-                  alt={p.nome}
-                  className="w-full h-40 object-cover rounded-xl mb-3"
-                />
+                <div className="w-full mb-3">
+                  <div className="overflow-hidden rounded-xl bg-slate-50" style={{ paddingBottom: '100%', position: 'relative' }}>
+                    <img
+                      src={imageUrl}
+                      alt={p.nome}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                </div>
                 <h3 className="font-semibold text-sm mb-1 line-clamp-2">{p.nome}</h3>
                 
               </Link>
