@@ -271,15 +271,29 @@ export default function ProdutoDetalhe() {
                 remarkPlugins={[remarkGfm, remarkBreaks]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                  img: ({ src = '', alt = '', style, ...props }) => (
-                    <img
-                      {...props}
-                      src={src.startsWith('http') ? src : supabase.storage.from('produtos').getPublicUrl(src).data.publicUrl}
-                      alt={alt}
-                      style={style as React.CSSProperties}
-                      className="max-w-2xl rounded-xl border border-[#dbe6f7] shadow-sm my-4"
-                    />
-                  ),
+                  img: ({ src = '', alt = '', style, ...props }) => {
+                    const resolved = src.startsWith('http') ? src : supabase.storage.from('produtos').getPublicUrl(src).data.publicUrl;
+                    const mergedStyle: React.CSSProperties = {
+                      display: 'block',
+                      width: '100%',
+                      maxWidth: '100%',
+                      height: 'auto',
+                      maxHeight: '60vh',
+                      margin: '0 auto',
+                      objectFit: 'contain',
+                      ...(style as React.CSSProperties || {}),
+                    };
+
+                    return (
+                      <img
+                        {...props}
+                        src={resolved}
+                        alt={alt}
+                        style={mergedStyle}
+                        className="rounded-xl border border-[#dbe6f7] shadow-sm my-4"
+                      />
+                    );
+                  },
                   a: ({ href = '', children }) => (
                     <a
                       href={href}
