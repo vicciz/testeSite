@@ -50,19 +50,29 @@ export async function GET(req: NextRequest) {
 
   const itemsXml = (produtos || [])
     .map((p) => {
-      const price = typeof p.preco === 'number' ? p.preco.toFixed(2) : String(p.preco || '0').replace(',', '.');
-      const image = p.image || p.image1 || p.image2 || p.image3 || p.image4 || p.image5 || p.image6 || '';
-      const imageUrl = publicImageUrl(image);
+      const price = typeof p.preco === 'number' ? Number(p.preco).toFixed(2) : String(p.preco || '0').replace(',', '.');
+
+      // primary image + additional images
+      const images = [p.image, p.image1, p.image2, p.image3, p.image4, p.image5, p.image6].filter(Boolean) as string[];
+      const imageUrls = images.map((img) => publicImageUrl(img));
+
+      const additionalImagesXml = imageUrls.slice(1).map((u) => `    <additional_image_link>${sanitize(u)}</additional_image_link>`).join('\n');
+
+      // optional identifiers
+      const gtin = (p as any).gtin || (p as any).ean || '';
+      const mpn = (p as any).mpn || '';
 
       return `  <item>
     <id>${sanitize(p.id)}</id>
     <title>${sanitize(p.nome || '')}</title>
     <description>${sanitize(p.descricao || p.detalhes || '')}</description>
     <link>${sanitize(productRoute(p))}</link>
-    <image_link>${sanitize(imageUrl)}</image_link>
-    <availability>${p.oculto ? 'out of stock' : 'in stock'}</availability>
+    <image_link>${sanitize(imageUrls[0] || '')}</image_link>
+${additionalImagesXml ? additionalImagesXml + '\n' : ''}    <availability>${p.oculto ? 'out of stock' : 'in stock'}</availability>
     <price>${sanitize(price)} BRL</price>
-    <brand>Imbalavel</brand>
+    <brand>${sanitize(p.fornecedor || 'Imbalavel')}</brand>
+    <condition>new</condition>
+    ${gtin ? `<gtin>${sanitize(gtin)}</gtin>` : ''}${mpn ? `\n    <mpn>${sanitize(mpn)}</mpn>` : ''}
   </item>`;
     })
     .join('\n');
